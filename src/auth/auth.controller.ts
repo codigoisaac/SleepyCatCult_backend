@@ -1,22 +1,34 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { LoginDTO, SignUpDTO } from './dtos/auth';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { LogInDTO, SignUpDTO } from './dtos/auth';
 import { AuthService } from './auth.service';
+import { AuthGuard } from './auth.guard';
+import { User } from '@root/generated/prisma';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  signup(@Body() body: SignUpDTO) {
-    this.authService.signup(body);
-
-    return body;
+  async signup(@Body() body: SignUpDTO) {
+    return this.authService.signup(body);
   }
 
   @Post('login')
-  login(@Body() body: LoginDTO) {
-    this.authService.login(body);
+  async login(@Body() body: LogInDTO) {
+    return this.authService.login(body);
+  }
 
-    return body;
+  @UseGuards(AuthGuard)
+  @Get('check')
+  check(@Request() request: { user: User }): User {
+    return request.user;
+    //! melhorar tipagem
   }
 }
