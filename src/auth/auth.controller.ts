@@ -6,7 +6,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { LogInDTO, SignUpDTO } from './dtos/auth';
+import { LogInDTO, SignUpDTO } from './dto/auth';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { User } from '@root/generated/prisma';

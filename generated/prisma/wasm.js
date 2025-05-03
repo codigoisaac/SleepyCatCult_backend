@@ -129,6 +129,30 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.MovieScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  userId: 'userId',
+  originalTitle: 'originalTitle',
+  coverImage: 'coverImage',
+  popularity: 'popularity',
+  voteCount: 'voteCount',
+  score: 'score',
+  tagline: 'tagline',
+  synopsis: 'synopsis',
+  genres: 'genres',
+  releaseDate: 'releaseDate',
+  duration: 'duration',
+  status: 'status',
+  language: 'language',
+  budget: 'budget',
+  revenue: 'revenue',
+  profit: 'profit',
+  trailerUrl: 'trailerUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -141,7 +165,8 @@ exports.Prisma.QueryMode = {
 
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Movie: 'Movie'
 };
 
 /**

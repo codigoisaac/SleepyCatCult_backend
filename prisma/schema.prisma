@@ -9,10 +9,41 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  name String 
-  email String @unique
-  password String
+  id        Int      @id @default(autoincrement())
+  name      String
+  movies    Movie[]
+  email     String   @unique
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Movie {
+  id            Int      @id @default(autoincrement())
+  title         String   @unique
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  originalTitle String
+  coverImage    String
+  popularity    Float
+  voteCount     Int
+  score         Float
+  tagline       String
+  synopsis      String
+  genres        String[]
+  releaseDate   DateTime
+  duration      Int
+  status        String
+  language      String
+  budget        Float
+  revenue       Float
+  profit        Float
+  trailerUrl    String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([title])
+  @@index([releaseDate])
+  @@index([score])
+  @@index([duration])
 }
