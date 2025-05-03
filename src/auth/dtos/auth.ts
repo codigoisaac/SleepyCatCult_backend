@@ -6,6 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Match } from './match.decorator';
 
 export class SignUpDTO {
   @IsString()
@@ -30,6 +31,9 @@ export class SignUpDTO {
     },
   )
   password: string;
+
+  @Match('password', { message: 'Passwords do not match' })
+  passwordConfirm: string;
 }
 
 export class LogInDTO {

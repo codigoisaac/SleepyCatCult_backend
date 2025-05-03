@@ -22,8 +22,11 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordConfirm, ...userData } = data;
+
     const user = await this.prismaService.user.create({
-      data: { ...data, password: hashedPassword },
+      data: { ...userData, password: hashedPassword },
     });
 
     const result = {
