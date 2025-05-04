@@ -1,4 +1,3 @@
-// create-movie.dto.ts
 import {
   IsString,
   IsNumber,
@@ -16,9 +15,6 @@ export class CreateMovieDto {
 
   @IsString()
   originalTitle: string;
-
-  @IsUrl()
-  coverImage: string;
 
   @IsNumber()
   popularity: number;

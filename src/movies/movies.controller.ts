@@ -12,6 +12,7 @@ import {
   ValidationPipe,
   Query,
   ParseIntPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -26,13 +27,28 @@ export class MoviesController {
 
   @UseGuards(AuthGuard)
   @Post()
+  @UsePipes(new ValidationPipe({ transform: true }))
   create(
-    @Request() request: { user: User },
+    @Request() request: { user: User; file?: any },
     @Body() createMovieDto: CreateMovieDto,
   ) {
     const userId = request.user.id;
 
-    return this.moviesService.create(userId, createMovieDto);
+    // Verificar obrigatoriamente a presença do arquivo de imagem
+    if (!request.file) {
+      throw new BadRequestException(
+        'Cover image file is required. Please upload an image file using multipart/form-data.',
+      );
+    }
+
+    console.log(
+      'Criando filme:',
+      createMovieDto.title,
+      'com imagem:',
+      request.file ? 'Arquivo enviado' : 'Sem arquivo (erro)',
+    );
+
+    return this.moviesService.create(userId, createMovieDto, request.file);
   }
 
   // exemplos de uso:
@@ -61,8 +77,20 @@ export class MoviesController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMovieDto: UpdateMovieDto,
+    @Request() request: { file?: any },
   ) {
-    return this.moviesService.update(id, updateMovieDto);
+    // Log para debug
+    console.log('Atualizando filme com ID:', id);
+    console.log('Arquivo de imagem presente:', request.file ? 'Sim' : 'Não');
+
+    // Verificamos se há pelo menos algo para atualizar (campos ou imagem)
+    if (!request.file && Object.keys(updateMovieDto).length === 0) {
+      throw new BadRequestException(
+        'At least one field to update or a new cover image file is required.',
+      );
+    }
+
+    return this.moviesService.update(id, updateMovieDto, request.file);
   }
 
   @UseGuards(AuthGuard)

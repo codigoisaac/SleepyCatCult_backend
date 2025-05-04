@@ -18,9 +18,6 @@ export class UpdateMovieDto extends PartialType(CreateMovieDto) {
   @IsString()
   originalTitle?: string;
 
-  @IsUrl()
-  coverImage?: string;
-
   @IsNumber()
   popularity?: number;
 
