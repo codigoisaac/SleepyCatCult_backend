@@ -16,8 +16,8 @@ import {
   Query,
   ParseIntPipe,
   BadRequestException,
-  HttpStatus,
   HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -30,7 +30,7 @@ import { FilterMovieDto } from './dto/filter-movie.dto';
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
-  // Endpoint 1: Criar apenas os dados do filme (sem imagem)
+  // Endpoint 1: Create movie data (step 1)
   @UseGuards(AuthGuard)
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -39,9 +39,9 @@ export class MoviesController {
     @Body() createMovieDto: CreateMovieDto,
   ) {
     const userId = request.user.id;
-    console.log('Criando dados do filme:', createMovieDto.title);
+    console.log('Creating movie data:', createMovieDto.title);
 
-    // Cria o filme com um placeholder para a imagem
+    // Create the movie with a placeholder for the image
     const movie = await this.moviesService.createInitial(
       userId,
       createMovieDto,
@@ -49,12 +49,12 @@ export class MoviesController {
 
     return {
       ...movie,
-      message: 'Filme criado com sucesso. Faça upload da imagem de capa.',
+      message: 'Movie created successfully. Upload a cover image.',
       uploadEndpoint: `/movies/${movie.id}/cover-image`,
     };
   }
 
-  // Endpoint 2: Fazer upload da imagem para um filme já criado
+  // Endpoint 2: Upload cover image for an existing movie
   @UseGuards(AuthGuard)
   @Post(':id/cover-image')
   @HttpCode(HttpStatus.OK)
@@ -68,10 +68,10 @@ export class MoviesController {
       );
     }
 
-    console.log('Recebendo imagem para o filme ID:', id);
+    console.log('Receiving image for movie ID:', id);
 
     try {
-      // Atualiza o filme com a imagem real
+      // Update the movie with the real image
       const updatedMovie = await this.moviesService.uploadCoverImage(
         id,
         request.file,
@@ -80,33 +80,28 @@ export class MoviesController {
 
       return {
         ...updatedMovie,
-        message: 'Imagem de capa atualizada com sucesso.',
+        message: 'Cover image updated successfully.',
       };
     } catch (error) {
-      // Se ocorrer um erro no upload, podemos decidir excluir o filme
-      // para evitar um filme sem imagem
+      // If there's an error during upload, we might want to delete the movie
+      // to avoid a movie without an image
       if (error.message.includes('not found') || error.status === 404) {
-        throw error; // Se o filme não existe, apenas repassa o erro
+        throw error; // If the movie doesn't exist, just pass the error
       }
 
-      // Se for outro tipo de erro, tenta fazer rollback
-      console.error('Erro ao fazer upload de imagem:', error);
+      // If it's another type of error, try to rollback
+      console.error('Error uploading image:', error);
       await this.moviesService.remove(id).catch((e) => {
-        console.error('Erro ao tentar remover filme após falha no upload:', e);
+        console.error('Error trying to remove movie after upload failure:', e);
       });
 
       throw new BadRequestException(
-        'Erro ao fazer upload da imagem. O filme foi removido para manter a consistência dos dados.',
+        'Error uploading image. The movie was removed to maintain data consistency.',
       );
     }
   }
 
-  // exemplos de uso:
-  // /movies
-  // /movies?title=guerra
-  // /movies?durationMin=90&durationMax=180
-  // /movies?releaseDateMin=2000-01-01&releaseDateMax=2005-12-31&durationMin=150&title=s
-  // /movies?page=2&perPage=10
+  // Get movies list with filter options
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
   findAll(@Query() filterDto: FilterMovieDto) {
@@ -115,12 +110,14 @@ export class MoviesController {
     });
   }
 
+  // Get a specific movie by ID
   @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.moviesService.findOne(id);
   }
 
+  // Update a movie
   @UseGuards(AuthGuard)
   @Patch(':id')
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -129,11 +126,11 @@ export class MoviesController {
     @Body() updateMovieDto: UpdateMovieDto,
     @Request() request: { file?: any },
   ) {
-    // Log para debug
-    console.log('Atualizando filme com ID:', id);
-    console.log('Arquivo de imagem presente:', request.file ? 'Sim' : 'Não');
+    // Debug logs
+    console.log('Updating movie with ID:', id);
+    console.log('Image file present:', request.file ? 'Yes' : 'No');
 
-    // Verificamos se há pelo menos algo para atualizar (campos ou imagem)
+    // Check if there's at least something to update (fields or image)
     if (!request.file && Object.keys(updateMovieDto).length === 0) {
       throw new BadRequestException(
         'At least one field to update or a new cover image file is required.',
@@ -143,6 +140,7 @@ export class MoviesController {
     return this.moviesService.update(id, updateMovieDto, request.file);
   }
 
+  // Delete a movie
   @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {

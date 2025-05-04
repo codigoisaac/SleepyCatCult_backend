@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable no-useless-catch */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import {
@@ -17,7 +16,7 @@ import { Movie, Prisma } from '@root/generated/prisma';
 import { EmailService } from 'src/email/email.service';
 import { StorageService } from 'src/storage/storage.service';
 
-// Tempo máximo (em minutos) que um filme pode ficar sem imagem
+// Maximum time (in minutes) a movie can be without an image
 const MAX_PENDING_IMAGE_TIME = 30;
 
 @Injectable()
@@ -27,31 +26,31 @@ export class MoviesService {
     private emailService: EmailService,
     private storageService: StorageService,
   ) {
-    // Configurar limpeza periódica de filmes sem imagem (opcional)
+    // Set up periodic cleanup of movies without images (optional)
     this.setupCleanupJob();
   }
 
   /**
-   * Etapa 1: Criar filme inicial com dados básicos, mas sem imagem ainda
+   * Step 1: Create initial movie with basic data, but no image yet
    */
   async createInitial(
     userId: number,
     createMovieDto: CreateMovieDto,
   ): Promise<Movie> {
     try {
-      // Criar o filme com um placeholder para a imagem
-      // Usamos um timestamp para saber quando o filme foi criado sem imagem
+      // Create the movie with a placeholder for the image
+      // We use a timestamp to know when the movie was created without an image
       const movie = await this.prismaService.movie.create({
         data: {
           ...createMovieDto,
-          // Definimos um marcador para identificar que este filme está aguardando imagem
+          // Set a marker to identify that this movie is waiting for an image
           coverImage: `pending_${Date.now()}`,
           releaseDate: new Date(createMovieDto.releaseDate),
           userId,
         },
       });
 
-      // Agendar e-mail de lançamento, se aplicável
+      // Schedule release email, if applicable
       const releaseDate = new Date(createMovieDto.releaseDate);
       const now = new Date();
 
@@ -77,7 +76,7 @@ export class MoviesService {
   }
 
   /**
-   * Etapa 2: Fazer upload da imagem para um filme existente
+   * Step 2: Upload the image for an existing movie
    */
   async uploadCoverImage(
     id: number,
@@ -85,65 +84,78 @@ export class MoviesService {
     userId: number,
   ): Promise<Movie> {
     try {
-      // Verificar se o filme existe e pertence ao usuário
+      console.log(`Starting image upload process for movie ID: ${id}`);
+
+      // Check if the movie exists and belongs to the user
       const movie = await this.prismaService.movie.findUnique({
         where: { id },
       });
 
       if (!movie) {
+        console.log(`Movie ID ${id} not found`);
         throw new NotFoundException(`Movie with ID ${id} not found`);
       }
 
       if (movie.userId !== userId) {
+        console.log(
+          `User ID ${userId} does not have permission to modify movie ID ${id}`,
+        );
         throw new ForbiddenException(
           'You do not have permission to modify this movie',
         );
       }
 
-      // Verificar se o filme está aguardando imagem (começa com 'pending_')
+      // Check if the movie is waiting for an image (starts with 'pending_')
       const isPending = movie.coverImage.startsWith('pending_');
+      console.log(
+        `Movie ID ${id} status: ${isPending ? 'Waiting for image' : 'Already has an image'}`,
+      );
 
-      // Se não estiver pendente, significa que já tem uma imagem
-      // Nesse caso, vamos excluir a imagem antiga antes de fazer upload da nova
-      if (
-        !isPending &&
-        (movie.coverImage.includes('r2.cloudflarestorage.com') ||
-          movie.coverImage.includes(process.env.R2_CDN_DOMAIN as string))
-      ) {
+      // If not pending, it means it already has an image
+      // In that case, we'll delete the old image before uploading a new one
+      if (!isPending) {
         try {
+          console.log(`Deleting old image: ${movie.coverImage}`);
           await this.storageService.deleteFile(movie.coverImage);
+          console.log('Old image deleted successfully');
         } catch (error) {
           console.error('Failed to delete old image:', error);
-          // Continuamos mesmo se a exclusão falhar
+          // We continue even if deletion fails
         }
       }
 
-      // Fazer upload da nova imagem
-      const coverImageUrl =
-        await this.storageService.uploadFile(coverImageFile);
+      // Upload the new image
+      console.log('Starting upload of new image to Cloudflare R2');
+      const imageUrl = await this.storageService.uploadFile(coverImageFile);
+      console.log(`Upload successful! Image URL: ${imageUrl}`);
 
-      // Atualizar o filme com a URL da nova imagem
+      // Update the movie with the URL of the new image
+      console.log(`Updating movie ID ${id} record with the new image URL`);
       const updatedMovie = await this.prismaService.movie.update({
         where: { id },
         data: {
-          coverImage: coverImageUrl,
+          coverImage: imageUrl,
         },
       });
 
+      console.log(
+        `✅ Upload process completed successfully for movie ID: ${id} (${movie.title})`,
+      );
       return updatedMovie;
     } catch (error) {
-      // Se ocorrer um erro durante o upload, não queremos deixar o filme sem imagem
-      // O controller decidirá se deve excluir o filme
+      // If there's an error during upload, we don't want to leave the movie without an image
+      // The controller will decide if it should delete the movie
+      console.error(`❌ Error during image upload for movie ID ${id}:`, error);
       throw error;
     }
   }
 
   /**
-   * Função que verifica e limpa filmes pendentes antigos
-   * Isso evita que filmes fiquem sem imagem permanentemente
+   * Function that checks and cleans up old pending movies
+   * This prevents movies from staying without an image permanently
    */
   private setupCleanupJob() {
-    // Executar a limpeza a cada 10 minutos
+    // Run cleanup every 10 minutes
     setInterval(
       async () => {
         try {
@@ -157,13 +169,13 @@ export class MoviesService {
           });
 
           for (const movie of movies) {
-            // Extrair o timestamp do placeholder
+            // Extract the timestamp from the placeholder
             const timestamp = parseInt(
               movie.coverImage.replace('pending_', ''),
               10,
             );
 
-            // Verificar se passou o tempo máximo permitido
+            // Check if maximum allowed time has passed
             if (now - timestamp > MAX_PENDING_IMAGE_TIME * 60 * 1000) {
               console.log(
                 `Removing movie ${movie.id} that has been without image for too long`,
@@ -176,10 +188,8 @@ export class MoviesService {
         }
       },
       10 * 60 * 1000,
-    ); // 10 minutos
+    ); // 10 minutes
   }
-
-  // O resto do código permanece o mesmo...
 
   async findAll({
     durationMin,
@@ -225,7 +235,7 @@ export class MoviesService {
           gte: scoreMin ?? undefined,
           lte: scoreMax ?? undefined,
         },
-        // Não mostrar filmes com imagem pendente
+        // Don't show movies with pending images
         coverImage: {
           not: {
             startsWith: 'pending_',
@@ -249,7 +259,7 @@ export class MoviesService {
       throw new NotFoundException(`Movie with ID ${id} not found`);
     }
 
-    // Se o filme ainda estiver aguardando imagem, não permitir acesso
+    // If the movie is still waiting for an image, don't allow access
     if (movie.coverImage.startsWith('pending_')) {
       throw new BadRequestException('This movie is still being processed');
     }
@@ -271,40 +281,37 @@ export class MoviesService {
         throw new NotFoundException(`Movie with ID ${id} not found`);
       }
 
-      // Não permitir atualização de filmes sem imagem
+      // Don't allow updates to movies without images
       if (currentMovie.coverImage.startsWith('pending_')) {
         throw new BadRequestException(
           'Cannot update a movie without a cover image. Upload an image first.',
         );
       }
 
-      // Gerenciar upload de nova imagem e exclusão da antiga, se necessário
-      let coverImageUrl: string | undefined = undefined;
+      // Handle upload of new image and deletion of old one, if needed
+      let imageUrl: string | undefined = undefined;
 
       if (coverImageFile) {
-        // Upload da nova imagem
-        coverImageUrl = await this.storageService.uploadFile(coverImageFile);
+        console.log(`Updating image for movie ID: ${id}`);
 
-        // Excluir a imagem antiga, se ela veio do nosso storage
-        if (
-          currentMovie.coverImage &&
-          (currentMovie.coverImage.includes('r2.cloudflarestorage.com') ||
-            currentMovie.coverImage.includes(
-              process.env.R2_CDN_DOMAIN as string,
-            ))
-        ) {
-          try {
-            await this.storageService.deleteFile(currentMovie.coverImage);
-          } catch (error) {
-            console.error('Failed to delete old image:', error);
-            // Não deixar o erro de exclusão impedir a atualização do filme
-          }
+        // Upload the new image
+        imageUrl = await this.storageService.uploadFile(coverImageFile);
+        console.log(`New image uploaded. URL: ${imageUrl}`);
+
+        // Delete the old image
+        try {
+          console.log(`Deleting old image: ${currentMovie.coverImage}`);
+          await this.storageService.deleteFile(currentMovie.coverImage);
+          console.log('Old image deleted successfully');
+        } catch (error) {
+          console.error('Failed to delete old image:', error);
+          // Don't let deletion error prevent the movie update
         }
       }
 
       const prismaData = {
         ...updateMovieDto,
-        ...(coverImageUrl && { coverImage: coverImageUrl }),
+        ...(imageUrl && { coverImage: imageUrl }),
         releaseDate: updateMovieDto.releaseDate
           ? new Date(updateMovieDto.releaseDate)
           : undefined,
@@ -349,7 +356,7 @@ export class MoviesService {
 
   async remove(id: number): Promise<Movie> {
     try {
-      // Buscar o filme antes de excluir para obter a URL da imagem
+      // Get the movie before deleting to get the image reference
       const movie = await this.prismaService.movie.findUnique({
         where: { id },
       });
@@ -358,26 +365,23 @@ export class MoviesService {
         throw new NotFoundException(`Movie with ID ${id} not found`);
       }
 
-      // Excluir os agendamentos de e-mail
+      // Delete email schedules
       await this.emailService.cancelMovieReleaseEmail(id);
 
-      // Excluir o filme do banco de dados
+      // Delete the movie from the database
       const deletedMovie = await this.prismaService.movie.delete({
         where: { id },
       });
 
-      // Excluir a imagem do storage (somente se não for um placeholder)
-      if (
-        movie.coverImage &&
-        !movie.coverImage.startsWith('pending_') &&
-        (movie.coverImage.includes('r2.cloudflarestorage.com') ||
-          movie.coverImage.includes(process.env.R2_CDN_DOMAIN as string))
-      ) {
+      // Delete the image from storage (only if it's not a placeholder)
+      if (movie.coverImage && !movie.coverImage.startsWith('pending_')) {
         try {
+          console.log(`Deleting image for movie ${id}: ${movie.coverImage}`);
           await this.storageService.deleteFile(movie.coverImage);
+          console.log(`Image for movie ${id} deleted successfully`);
         } catch (error) {
           console.error('Failed to delete image:', error);
-          // Não deixar o erro de exclusão impedir a operação
+          // Don't let deletion error prevent the operation
         }
       }
 

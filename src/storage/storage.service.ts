@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   S3Client,
   PutObjectCommand,
@@ -11,7 +11,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 
-// Interface para deixar o código mais tipo-seguro
+// Interface for type safety
 interface UploadedFile {
   originalname: string;
   buffer: Buffer;
@@ -22,10 +22,11 @@ interface UploadedFile {
 export class StorageService {
   private s3Client: S3Client;
   private bucketName: string;
-  private cdnDomain: string;
+  private publicDevUrl: string;
+  private readonly logger = new Logger(StorageService.name);
 
   constructor(private configService: ConfigService) {
-    // Obter e validar as configurações necessárias
+    // Get and validate required configurations
     const accessKeyId = this.configService.get<string>('R2_ACCESS_KEY_ID');
     const secretAccessKey = this.configService.get<string>(
       'R2_SECRET_ACCESS_KEY',
@@ -34,28 +35,40 @@ export class StorageService {
     this.bucketName = this.configService.get<string>(
       'R2_BUCKET_NAME',
     ) as string;
-    this.cdnDomain = this.configService.get<string>('R2_CDN_DOMAIN') as string;
+    this.publicDevUrl = this.configService.get<string>(
+      'R2_PUBLIC_DEV_URL',
+    ) as string;
 
-    // Verificar se as credenciais estão definidas
+    // Check if credentials are set
     if (!accessKeyId || !secretAccessKey || !endpoint || !this.bucketName) {
       throw new Error(
         'R2 configuration is incomplete. Check your environment variables.',
       );
     }
 
-    // Configurar o cliente S3 para uso com Cloudflare R2
+    // Validate that public URL is configured
+    if (!this.publicDevUrl) {
+      throw new Error(
+        'R2_PUBLIC_DEV_URL is not configured. Please set this environment variable.',
+      );
+    }
+
+    // Configure S3 client for use with Cloudflare R2
     this.s3Client = new S3Client({
-      region: 'auto', // Para R2, use 'auto'
+      region: 'auto', // For R2, use 'auto'
       endpoint,
       credentials: {
         accessKeyId,
         secretAccessKey,
       },
     });
+
+    this.logger.log(`R2 Storage configured for bucket: ${this.bucketName}`);
+    this.logger.log(`Using public development URL: ${this.publicDevUrl}`);
   }
 
   /**
-   * Verifica se um objeto tem as propriedades necessárias para ser considerado um arquivo
+   * Check if an object has the required properties to be considered a file
    */
   private isValidFile(file: any): file is UploadedFile {
     return (
@@ -67,53 +80,56 @@ export class StorageService {
   }
 
   /**
-   * Faz upload de um arquivo para o Cloudflare R2
-   * @param file O arquivo a ser enviado
-   * @param folder Pasta opcional para organizar arquivos
-   * @returns URL pública do arquivo
+   * Upload a file to Cloudflare R2
+   * @param file The file to be uploaded
+   * @param folder Optional folder to organize files
+   * @returns Public URL for the file
    */
   async uploadFile(
     file: any,
     folder: string = 'movie-covers',
   ): Promise<string> {
-    // Validar o arquivo
+    // Validate the file
     if (!this.isValidFile(file)) {
       throw new Error('Invalid file format or missing required properties');
     }
 
-    // Gerar um nome único para o arquivo para evitar colisões
+    // Generate a unique name for the file to avoid collisions
     const fileExtension = file.originalname.split('.').pop();
     const uniqueFileName = `${folder}/${Date.now()}-${Math.random()
       .toString(36)
       .substring(2, 15)}.${fileExtension}`;
 
     try {
-      // Enviar o arquivo para o R2
-      // Nota: Cloudflare R2 não suporta ACL da mesma forma que o S3
-      // É necessário configurar a política de acesso público no bucket
+      this.logger.log(`Sending file to R2: ${uniqueFileName}`);
+
+      // Send the file to R2
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
         Key: uniqueFileName,
         Body: file.buffer,
         ContentType: file.mimetype,
+        // Set cache control for better performance
+        CacheControl: 'public, max-age=31536000',
       });
 
       await this.s3Client.send(command);
+      this.logger.log(`File successfully uploaded: ${uniqueFileName}`);
 
-      // Retornar a URL pública do arquivo
-      // Se você tiver um domínio personalizado configurado para seu bucket R2, use-o aqui
-      return this.cdnDomain
-        ? `https://${this.cdnDomain}/${uniqueFileName}`
-        : `https://${this.bucketName}.r2.cloudflarestorage.com/${uniqueFileName}`;
+      // Return the public URL for the file
+      const publicUrl = `${this.publicDevUrl}/${uniqueFileName}`;
+
+      this.logger.log(`Public URL generated: ${publicUrl}`);
+      return publicUrl;
     } catch (error) {
-      console.error('Error uploading file to R2:', error);
+      this.logger.error(`Error uploading file: ${error.message}`, error.stack);
       throw new Error(`Failed to upload file: ${error.message}`);
     }
   }
 
   /**
-   * Exclui um arquivo do Cloudflare R2
-   * @param fileUrl URL do arquivo a ser excluído
+   * Delete a file from Cloudflare R2
+   * @param fileUrl URL or path of the file to be deleted
    */
   async deleteFile(fileUrl: string): Promise<void> {
     if (!fileUrl) {
@@ -121,30 +137,33 @@ export class StorageService {
     }
 
     try {
-      // Extrair o caminho do arquivo da URL
-      const urlParts = new URL(fileUrl);
-      let key: string;
+      this.logger.log(`Starting deletion of file: ${fileUrl}`);
 
-      if (this.cdnDomain && urlParts.hostname === this.cdnDomain) {
-        // Se estiver usando domínio personalizado
-        key = urlParts.pathname.substring(1); // Remover a barra inicial
-      } else if (urlParts.hostname.includes('r2.cloudflarestorage.com')) {
-        // Se estiver usando a URL padrão do R2
-        key = urlParts.pathname.split('/').slice(2).join('/'); // Remover /bucketname/
-      } else {
-        throw new Error(`Unsupported URL format: ${fileUrl}`);
+      // Verify that the URL starts with our public dev URL
+      if (!fileUrl.startsWith(this.publicDevUrl)) {
+        throw new Error(
+          `Invalid file URL format: ${fileUrl}. URL must start with ${this.publicDevUrl}`,
+        );
       }
 
-      // Enviar comando para excluir o arquivo
+      // Extract the key by removing the public URL prefix
+      const key = fileUrl.substring(this.publicDevUrl.length + 1); // +1 to remove the leading slash
+
+      this.logger.log(`Object key to be deleted: ${key}`);
+
+      // Send command to delete the file
       const command = new DeleteObjectCommand({
         Bucket: this.bucketName,
         Key: key,
       });
 
       await this.s3Client.send(command);
-      console.log(`Successfully deleted file: ${key}`);
+      this.logger.log(`File successfully deleted: ${key}`);
     } catch (error) {
-      console.error(`Error deleting file ${fileUrl}:`, error);
+      this.logger.error(
+        `Error deleting file ${fileUrl}: ${error.message}`,
+        error.stack,
+      );
       throw new Error(`Failed to delete file: ${error.message}`);
     }
   }
