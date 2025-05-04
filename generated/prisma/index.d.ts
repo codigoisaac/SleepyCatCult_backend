@@ -23,6 +23,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  * 
  */
 export type Movie = $Result.DefaultSelection<Prisma.$MoviePayload>
+/**
+ * Model EmailSchedule
+ * 
+ */
+export type EmailSchedule = $Result.DefaultSelection<Prisma.$EmailSchedulePayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -168,6 +173,16 @@ export class PrismaClient<
     * ```
     */
   get movie(): Prisma.MovieDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.emailSchedule`: Exposes CRUD operations for the **EmailSchedule** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EmailSchedules
+    * const emailSchedules = await prisma.emailSchedule.findMany()
+    * ```
+    */
+  get emailSchedule(): Prisma.EmailScheduleDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -609,7 +624,8 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
-    Movie: 'Movie'
+    Movie: 'Movie',
+    EmailSchedule: 'EmailSchedule'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -628,7 +644,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "movie"
+      modelProps: "user" | "movie" | "emailSchedule"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -780,6 +796,80 @@ export namespace Prisma {
           }
         }
       }
+      EmailSchedule: {
+        payload: Prisma.$EmailSchedulePayload<ExtArgs>
+        fields: Prisma.EmailScheduleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EmailScheduleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EmailScheduleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload>
+          }
+          findFirst: {
+            args: Prisma.EmailScheduleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EmailScheduleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload>
+          }
+          findMany: {
+            args: Prisma.EmailScheduleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload>[]
+          }
+          create: {
+            args: Prisma.EmailScheduleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload>
+          }
+          createMany: {
+            args: Prisma.EmailScheduleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EmailScheduleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload>[]
+          }
+          delete: {
+            args: Prisma.EmailScheduleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload>
+          }
+          update: {
+            args: Prisma.EmailScheduleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload>
+          }
+          deleteMany: {
+            args: Prisma.EmailScheduleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EmailScheduleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.EmailScheduleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload>[]
+          }
+          upsert: {
+            args: Prisma.EmailScheduleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSchedulePayload>
+          }
+          aggregate: {
+            args: Prisma.EmailScheduleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEmailSchedule>
+          }
+          groupBy: {
+            args: Prisma.EmailScheduleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EmailScheduleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EmailScheduleCountArgs<ExtArgs>
+            result: $Utils.Optional<EmailScheduleCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -866,6 +956,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     movie?: MovieOmit
+    emailSchedule?: EmailScheduleOmit
   }
 
   /* Types for Logging */
@@ -961,10 +1052,12 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     movies: number
+    emailSchedules: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     movies?: boolean | UserCountOutputTypeCountMoviesArgs
+    emailSchedules?: boolean | UserCountOutputTypeCountEmailSchedulesArgs
   }
 
   // Custom InputTypes
@@ -983,6 +1076,44 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountMoviesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MovieWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountEmailSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmailScheduleWhereInput
+  }
+
+
+  /**
+   * Count Type MovieCountOutputType
+   */
+
+  export type MovieCountOutputType = {
+    emailSchedules: number
+  }
+
+  export type MovieCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    emailSchedules?: boolean | MovieCountOutputTypeCountEmailSchedulesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * MovieCountOutputType without action
+   */
+  export type MovieCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MovieCountOutputType
+     */
+    select?: MovieCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * MovieCountOutputType without action
+   */
+  export type MovieCountOutputTypeCountEmailSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmailScheduleWhereInput
   }
 
 
@@ -1197,6 +1328,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     movies?: boolean | User$moviesArgs<ExtArgs>
+    emailSchedules?: boolean | User$emailSchedulesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1230,6 +1362,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     movies?: boolean | User$moviesArgs<ExtArgs>
+    emailSchedules?: boolean | User$emailSchedulesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1239,6 +1372,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       movies: Prisma.$MoviePayload<ExtArgs>[]
+      emailSchedules: Prisma.$EmailSchedulePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -1642,6 +1776,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     movies<T extends User$moviesArgs<ExtArgs> = {}>(args?: Subset<T, User$moviesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MoviePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    emailSchedules<T extends User$emailSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, User$emailSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2089,6 +2224,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.emailSchedules
+   */
+  export type User$emailSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    where?: EmailScheduleWhereInput
+    orderBy?: EmailScheduleOrderByWithRelationInput | EmailScheduleOrderByWithRelationInput[]
+    cursor?: EmailScheduleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EmailScheduleScalarFieldEnum | EmailScheduleScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2462,6 +2621,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    emailSchedules?: boolean | Movie$emailSchedulesArgs<ExtArgs>
+    _count?: boolean | MovieCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["movie"]>
 
   export type MovieSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2541,6 +2702,8 @@ export namespace Prisma {
   export type MovieOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "userId" | "originalTitle" | "coverImage" | "popularity" | "voteCount" | "score" | "tagline" | "synopsis" | "genres" | "releaseDate" | "duration" | "status" | "language" | "budget" | "revenue" | "profit" | "trailerUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["movie"]>
   export type MovieInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    emailSchedules?: boolean | Movie$emailSchedulesArgs<ExtArgs>
+    _count?: boolean | MovieCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type MovieIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -2553,6 +2716,7 @@ export namespace Prisma {
     name: "Movie"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      emailSchedules: Prisma.$EmailSchedulePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -2971,6 +3135,7 @@ export namespace Prisma {
   export interface Prisma__MovieClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    emailSchedules<T extends Movie$emailSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Movie$emailSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3417,6 +3582,30 @@ export namespace Prisma {
   }
 
   /**
+   * Movie.emailSchedules
+   */
+  export type Movie$emailSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    where?: EmailScheduleWhereInput
+    orderBy?: EmailScheduleOrderByWithRelationInput | EmailScheduleOrderByWithRelationInput[]
+    cursor?: EmailScheduleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EmailScheduleScalarFieldEnum | EmailScheduleScalarFieldEnum[]
+  }
+
+  /**
    * Movie without action
    */
   export type MovieDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3432,6 +3621,1140 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: MovieInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model EmailSchedule
+   */
+
+  export type AggregateEmailSchedule = {
+    _count: EmailScheduleCountAggregateOutputType | null
+    _avg: EmailScheduleAvgAggregateOutputType | null
+    _sum: EmailScheduleSumAggregateOutputType | null
+    _min: EmailScheduleMinAggregateOutputType | null
+    _max: EmailScheduleMaxAggregateOutputType | null
+  }
+
+  export type EmailScheduleAvgAggregateOutputType = {
+    id: number | null
+    movieId: number | null
+    userId: number | null
+  }
+
+  export type EmailScheduleSumAggregateOutputType = {
+    id: number | null
+    movieId: number | null
+    userId: number | null
+  }
+
+  export type EmailScheduleMinAggregateOutputType = {
+    id: number | null
+    movieId: number | null
+    userId: number | null
+    scheduledFor: Date | null
+    sent: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EmailScheduleMaxAggregateOutputType = {
+    id: number | null
+    movieId: number | null
+    userId: number | null
+    scheduledFor: Date | null
+    sent: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EmailScheduleCountAggregateOutputType = {
+    id: number
+    movieId: number
+    userId: number
+    scheduledFor: number
+    sent: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type EmailScheduleAvgAggregateInputType = {
+    id?: true
+    movieId?: true
+    userId?: true
+  }
+
+  export type EmailScheduleSumAggregateInputType = {
+    id?: true
+    movieId?: true
+    userId?: true
+  }
+
+  export type EmailScheduleMinAggregateInputType = {
+    id?: true
+    movieId?: true
+    userId?: true
+    scheduledFor?: true
+    sent?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EmailScheduleMaxAggregateInputType = {
+    id?: true
+    movieId?: true
+    userId?: true
+    scheduledFor?: true
+    sent?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EmailScheduleCountAggregateInputType = {
+    id?: true
+    movieId?: true
+    userId?: true
+    scheduledFor?: true
+    sent?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type EmailScheduleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EmailSchedule to aggregate.
+     */
+    where?: EmailScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailSchedules to fetch.
+     */
+    orderBy?: EmailScheduleOrderByWithRelationInput | EmailScheduleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EmailScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailSchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailSchedules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EmailSchedules
+    **/
+    _count?: true | EmailScheduleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: EmailScheduleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EmailScheduleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EmailScheduleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EmailScheduleMaxAggregateInputType
+  }
+
+  export type GetEmailScheduleAggregateType<T extends EmailScheduleAggregateArgs> = {
+        [P in keyof T & keyof AggregateEmailSchedule]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEmailSchedule[P]>
+      : GetScalarType<T[P], AggregateEmailSchedule[P]>
+  }
+
+
+
+
+  export type EmailScheduleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmailScheduleWhereInput
+    orderBy?: EmailScheduleOrderByWithAggregationInput | EmailScheduleOrderByWithAggregationInput[]
+    by: EmailScheduleScalarFieldEnum[] | EmailScheduleScalarFieldEnum
+    having?: EmailScheduleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EmailScheduleCountAggregateInputType | true
+    _avg?: EmailScheduleAvgAggregateInputType
+    _sum?: EmailScheduleSumAggregateInputType
+    _min?: EmailScheduleMinAggregateInputType
+    _max?: EmailScheduleMaxAggregateInputType
+  }
+
+  export type EmailScheduleGroupByOutputType = {
+    id: number
+    movieId: number
+    userId: number
+    scheduledFor: Date
+    sent: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: EmailScheduleCountAggregateOutputType | null
+    _avg: EmailScheduleAvgAggregateOutputType | null
+    _sum: EmailScheduleSumAggregateOutputType | null
+    _min: EmailScheduleMinAggregateOutputType | null
+    _max: EmailScheduleMaxAggregateOutputType | null
+  }
+
+  type GetEmailScheduleGroupByPayload<T extends EmailScheduleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EmailScheduleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EmailScheduleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EmailScheduleGroupByOutputType[P]>
+            : GetScalarType<T[P], EmailScheduleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EmailScheduleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    movieId?: boolean
+    userId?: boolean
+    scheduledFor?: boolean
+    sent?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    movie?: boolean | MovieDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["emailSchedule"]>
+
+  export type EmailScheduleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    movieId?: boolean
+    userId?: boolean
+    scheduledFor?: boolean
+    sent?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    movie?: boolean | MovieDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["emailSchedule"]>
+
+  export type EmailScheduleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    movieId?: boolean
+    userId?: boolean
+    scheduledFor?: boolean
+    sent?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    movie?: boolean | MovieDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["emailSchedule"]>
+
+  export type EmailScheduleSelectScalar = {
+    id?: boolean
+    movieId?: boolean
+    userId?: boolean
+    scheduledFor?: boolean
+    sent?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type EmailScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "movieId" | "userId" | "scheduledFor" | "sent" | "createdAt" | "updatedAt", ExtArgs["result"]["emailSchedule"]>
+  export type EmailScheduleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    movie?: boolean | MovieDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type EmailScheduleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    movie?: boolean | MovieDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type EmailScheduleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    movie?: boolean | MovieDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $EmailSchedulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EmailSchedule"
+    objects: {
+      movie: Prisma.$MoviePayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      movieId: number
+      userId: number
+      scheduledFor: Date
+      sent: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["emailSchedule"]>
+    composites: {}
+  }
+
+  type EmailScheduleGetPayload<S extends boolean | null | undefined | EmailScheduleDefaultArgs> = $Result.GetResult<Prisma.$EmailSchedulePayload, S>
+
+  type EmailScheduleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EmailScheduleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EmailScheduleCountAggregateInputType | true
+    }
+
+  export interface EmailScheduleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EmailSchedule'], meta: { name: 'EmailSchedule' } }
+    /**
+     * Find zero or one EmailSchedule that matches the filter.
+     * @param {EmailScheduleFindUniqueArgs} args - Arguments to find a EmailSchedule
+     * @example
+     * // Get one EmailSchedule
+     * const emailSchedule = await prisma.emailSchedule.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EmailScheduleFindUniqueArgs>(args: SelectSubset<T, EmailScheduleFindUniqueArgs<ExtArgs>>): Prisma__EmailScheduleClient<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EmailSchedule that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EmailScheduleFindUniqueOrThrowArgs} args - Arguments to find a EmailSchedule
+     * @example
+     * // Get one EmailSchedule
+     * const emailSchedule = await prisma.emailSchedule.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EmailScheduleFindUniqueOrThrowArgs>(args: SelectSubset<T, EmailScheduleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EmailScheduleClient<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EmailSchedule that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailScheduleFindFirstArgs} args - Arguments to find a EmailSchedule
+     * @example
+     * // Get one EmailSchedule
+     * const emailSchedule = await prisma.emailSchedule.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EmailScheduleFindFirstArgs>(args?: SelectSubset<T, EmailScheduleFindFirstArgs<ExtArgs>>): Prisma__EmailScheduleClient<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EmailSchedule that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailScheduleFindFirstOrThrowArgs} args - Arguments to find a EmailSchedule
+     * @example
+     * // Get one EmailSchedule
+     * const emailSchedule = await prisma.emailSchedule.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EmailScheduleFindFirstOrThrowArgs>(args?: SelectSubset<T, EmailScheduleFindFirstOrThrowArgs<ExtArgs>>): Prisma__EmailScheduleClient<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EmailSchedules that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailScheduleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EmailSchedules
+     * const emailSchedules = await prisma.emailSchedule.findMany()
+     * 
+     * // Get first 10 EmailSchedules
+     * const emailSchedules = await prisma.emailSchedule.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const emailScheduleWithIdOnly = await prisma.emailSchedule.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EmailScheduleFindManyArgs>(args?: SelectSubset<T, EmailScheduleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EmailSchedule.
+     * @param {EmailScheduleCreateArgs} args - Arguments to create a EmailSchedule.
+     * @example
+     * // Create one EmailSchedule
+     * const EmailSchedule = await prisma.emailSchedule.create({
+     *   data: {
+     *     // ... data to create a EmailSchedule
+     *   }
+     * })
+     * 
+     */
+    create<T extends EmailScheduleCreateArgs>(args: SelectSubset<T, EmailScheduleCreateArgs<ExtArgs>>): Prisma__EmailScheduleClient<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EmailSchedules.
+     * @param {EmailScheduleCreateManyArgs} args - Arguments to create many EmailSchedules.
+     * @example
+     * // Create many EmailSchedules
+     * const emailSchedule = await prisma.emailSchedule.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EmailScheduleCreateManyArgs>(args?: SelectSubset<T, EmailScheduleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EmailSchedules and returns the data saved in the database.
+     * @param {EmailScheduleCreateManyAndReturnArgs} args - Arguments to create many EmailSchedules.
+     * @example
+     * // Create many EmailSchedules
+     * const emailSchedule = await prisma.emailSchedule.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EmailSchedules and only return the `id`
+     * const emailScheduleWithIdOnly = await prisma.emailSchedule.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EmailScheduleCreateManyAndReturnArgs>(args?: SelectSubset<T, EmailScheduleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a EmailSchedule.
+     * @param {EmailScheduleDeleteArgs} args - Arguments to delete one EmailSchedule.
+     * @example
+     * // Delete one EmailSchedule
+     * const EmailSchedule = await prisma.emailSchedule.delete({
+     *   where: {
+     *     // ... filter to delete one EmailSchedule
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EmailScheduleDeleteArgs>(args: SelectSubset<T, EmailScheduleDeleteArgs<ExtArgs>>): Prisma__EmailScheduleClient<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EmailSchedule.
+     * @param {EmailScheduleUpdateArgs} args - Arguments to update one EmailSchedule.
+     * @example
+     * // Update one EmailSchedule
+     * const emailSchedule = await prisma.emailSchedule.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EmailScheduleUpdateArgs>(args: SelectSubset<T, EmailScheduleUpdateArgs<ExtArgs>>): Prisma__EmailScheduleClient<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EmailSchedules.
+     * @param {EmailScheduleDeleteManyArgs} args - Arguments to filter EmailSchedules to delete.
+     * @example
+     * // Delete a few EmailSchedules
+     * const { count } = await prisma.emailSchedule.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EmailScheduleDeleteManyArgs>(args?: SelectSubset<T, EmailScheduleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EmailSchedules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailScheduleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EmailSchedules
+     * const emailSchedule = await prisma.emailSchedule.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EmailScheduleUpdateManyArgs>(args: SelectSubset<T, EmailScheduleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EmailSchedules and returns the data updated in the database.
+     * @param {EmailScheduleUpdateManyAndReturnArgs} args - Arguments to update many EmailSchedules.
+     * @example
+     * // Update many EmailSchedules
+     * const emailSchedule = await prisma.emailSchedule.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more EmailSchedules and only return the `id`
+     * const emailScheduleWithIdOnly = await prisma.emailSchedule.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends EmailScheduleUpdateManyAndReturnArgs>(args: SelectSubset<T, EmailScheduleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one EmailSchedule.
+     * @param {EmailScheduleUpsertArgs} args - Arguments to update or create a EmailSchedule.
+     * @example
+     * // Update or create a EmailSchedule
+     * const emailSchedule = await prisma.emailSchedule.upsert({
+     *   create: {
+     *     // ... data to create a EmailSchedule
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EmailSchedule we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EmailScheduleUpsertArgs>(args: SelectSubset<T, EmailScheduleUpsertArgs<ExtArgs>>): Prisma__EmailScheduleClient<$Result.GetResult<Prisma.$EmailSchedulePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EmailSchedules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailScheduleCountArgs} args - Arguments to filter EmailSchedules to count.
+     * @example
+     * // Count the number of EmailSchedules
+     * const count = await prisma.emailSchedule.count({
+     *   where: {
+     *     // ... the filter for the EmailSchedules we want to count
+     *   }
+     * })
+    **/
+    count<T extends EmailScheduleCountArgs>(
+      args?: Subset<T, EmailScheduleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EmailScheduleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EmailSchedule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailScheduleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EmailScheduleAggregateArgs>(args: Subset<T, EmailScheduleAggregateArgs>): Prisma.PrismaPromise<GetEmailScheduleAggregateType<T>>
+
+    /**
+     * Group by EmailSchedule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailScheduleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EmailScheduleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EmailScheduleGroupByArgs['orderBy'] }
+        : { orderBy?: EmailScheduleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EmailScheduleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEmailScheduleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EmailSchedule model
+   */
+  readonly fields: EmailScheduleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EmailSchedule.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EmailScheduleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    movie<T extends MovieDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MovieDefaultArgs<ExtArgs>>): Prisma__MovieClient<$Result.GetResult<Prisma.$MoviePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EmailSchedule model
+   */
+  interface EmailScheduleFieldRefs {
+    readonly id: FieldRef<"EmailSchedule", 'Int'>
+    readonly movieId: FieldRef<"EmailSchedule", 'Int'>
+    readonly userId: FieldRef<"EmailSchedule", 'Int'>
+    readonly scheduledFor: FieldRef<"EmailSchedule", 'DateTime'>
+    readonly sent: FieldRef<"EmailSchedule", 'Boolean'>
+    readonly createdAt: FieldRef<"EmailSchedule", 'DateTime'>
+    readonly updatedAt: FieldRef<"EmailSchedule", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EmailSchedule findUnique
+   */
+  export type EmailScheduleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    /**
+     * Filter, which EmailSchedule to fetch.
+     */
+    where: EmailScheduleWhereUniqueInput
+  }
+
+  /**
+   * EmailSchedule findUniqueOrThrow
+   */
+  export type EmailScheduleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    /**
+     * Filter, which EmailSchedule to fetch.
+     */
+    where: EmailScheduleWhereUniqueInput
+  }
+
+  /**
+   * EmailSchedule findFirst
+   */
+  export type EmailScheduleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    /**
+     * Filter, which EmailSchedule to fetch.
+     */
+    where?: EmailScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailSchedules to fetch.
+     */
+    orderBy?: EmailScheduleOrderByWithRelationInput | EmailScheduleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EmailSchedules.
+     */
+    cursor?: EmailScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailSchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailSchedules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EmailSchedules.
+     */
+    distinct?: EmailScheduleScalarFieldEnum | EmailScheduleScalarFieldEnum[]
+  }
+
+  /**
+   * EmailSchedule findFirstOrThrow
+   */
+  export type EmailScheduleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    /**
+     * Filter, which EmailSchedule to fetch.
+     */
+    where?: EmailScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailSchedules to fetch.
+     */
+    orderBy?: EmailScheduleOrderByWithRelationInput | EmailScheduleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EmailSchedules.
+     */
+    cursor?: EmailScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailSchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailSchedules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EmailSchedules.
+     */
+    distinct?: EmailScheduleScalarFieldEnum | EmailScheduleScalarFieldEnum[]
+  }
+
+  /**
+   * EmailSchedule findMany
+   */
+  export type EmailScheduleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    /**
+     * Filter, which EmailSchedules to fetch.
+     */
+    where?: EmailScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailSchedules to fetch.
+     */
+    orderBy?: EmailScheduleOrderByWithRelationInput | EmailScheduleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EmailSchedules.
+     */
+    cursor?: EmailScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailSchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailSchedules.
+     */
+    skip?: number
+    distinct?: EmailScheduleScalarFieldEnum | EmailScheduleScalarFieldEnum[]
+  }
+
+  /**
+   * EmailSchedule create
+   */
+  export type EmailScheduleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    /**
+     * The data needed to create a EmailSchedule.
+     */
+    data: XOR<EmailScheduleCreateInput, EmailScheduleUncheckedCreateInput>
+  }
+
+  /**
+   * EmailSchedule createMany
+   */
+  export type EmailScheduleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EmailSchedules.
+     */
+    data: EmailScheduleCreateManyInput | EmailScheduleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EmailSchedule createManyAndReturn
+   */
+  export type EmailScheduleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * The data used to create many EmailSchedules.
+     */
+    data: EmailScheduleCreateManyInput | EmailScheduleCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EmailSchedule update
+   */
+  export type EmailScheduleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    /**
+     * The data needed to update a EmailSchedule.
+     */
+    data: XOR<EmailScheduleUpdateInput, EmailScheduleUncheckedUpdateInput>
+    /**
+     * Choose, which EmailSchedule to update.
+     */
+    where: EmailScheduleWhereUniqueInput
+  }
+
+  /**
+   * EmailSchedule updateMany
+   */
+  export type EmailScheduleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EmailSchedules.
+     */
+    data: XOR<EmailScheduleUpdateManyMutationInput, EmailScheduleUncheckedUpdateManyInput>
+    /**
+     * Filter which EmailSchedules to update
+     */
+    where?: EmailScheduleWhereInput
+    /**
+     * Limit how many EmailSchedules to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EmailSchedule updateManyAndReturn
+   */
+  export type EmailScheduleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * The data used to update EmailSchedules.
+     */
+    data: XOR<EmailScheduleUpdateManyMutationInput, EmailScheduleUncheckedUpdateManyInput>
+    /**
+     * Filter which EmailSchedules to update
+     */
+    where?: EmailScheduleWhereInput
+    /**
+     * Limit how many EmailSchedules to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EmailSchedule upsert
+   */
+  export type EmailScheduleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    /**
+     * The filter to search for the EmailSchedule to update in case it exists.
+     */
+    where: EmailScheduleWhereUniqueInput
+    /**
+     * In case the EmailSchedule found by the `where` argument doesn't exist, create a new EmailSchedule with this data.
+     */
+    create: XOR<EmailScheduleCreateInput, EmailScheduleUncheckedCreateInput>
+    /**
+     * In case the EmailSchedule was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EmailScheduleUpdateInput, EmailScheduleUncheckedUpdateInput>
+  }
+
+  /**
+   * EmailSchedule delete
+   */
+  export type EmailScheduleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
+    /**
+     * Filter which EmailSchedule to delete.
+     */
+    where: EmailScheduleWhereUniqueInput
+  }
+
+  /**
+   * EmailSchedule deleteMany
+   */
+  export type EmailScheduleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EmailSchedules to delete
+     */
+    where?: EmailScheduleWhereInput
+    /**
+     * Limit how many EmailSchedules to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EmailSchedule without action
+   */
+  export type EmailScheduleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSchedule
+     */
+    select?: EmailScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSchedule
+     */
+    omit?: EmailScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmailScheduleInclude<ExtArgs> | null
   }
 
 
@@ -3486,6 +4809,19 @@ export namespace Prisma {
   };
 
   export type MovieScalarFieldEnum = (typeof MovieScalarFieldEnum)[keyof typeof MovieScalarFieldEnum]
+
+
+  export const EmailScheduleScalarFieldEnum: {
+    id: 'id',
+    movieId: 'movieId',
+    userId: 'userId',
+    scheduledFor: 'scheduledFor',
+    sent: 'sent',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type EmailScheduleScalarFieldEnum = (typeof EmailScheduleScalarFieldEnum)[keyof typeof EmailScheduleScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -3563,6 +4899,13 @@ export namespace Prisma {
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
   /**
    * Deep Input Types
    */
@@ -3579,6 +4922,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     movies?: MovieListRelationFilter
+    emailSchedules?: EmailScheduleListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -3589,6 +4933,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     movies?: MovieOrderByRelationAggregateInput
+    emailSchedules?: EmailScheduleOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -3602,6 +4947,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     movies?: MovieListRelationFilter
+    emailSchedules?: EmailScheduleListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -3656,6 +5002,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Movie"> | Date | string
     updatedAt?: DateTimeFilter<"Movie"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    emailSchedules?: EmailScheduleListRelationFilter
   }
 
   export type MovieOrderByWithRelationInput = {
@@ -3681,6 +5028,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    emailSchedules?: EmailScheduleOrderByRelationAggregateInput
   }
 
   export type MovieWhereUniqueInput = Prisma.AtLeast<{
@@ -3709,6 +5057,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Movie"> | Date | string
     updatedAt?: DateTimeFilter<"Movie"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    emailSchedules?: EmailScheduleListRelationFilter
   }, "id" | "title">
 
   export type MovieOrderByWithAggregationInput = {
@@ -3767,6 +5116,76 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Movie"> | Date | string
   }
 
+  export type EmailScheduleWhereInput = {
+    AND?: EmailScheduleWhereInput | EmailScheduleWhereInput[]
+    OR?: EmailScheduleWhereInput[]
+    NOT?: EmailScheduleWhereInput | EmailScheduleWhereInput[]
+    id?: IntFilter<"EmailSchedule"> | number
+    movieId?: IntFilter<"EmailSchedule"> | number
+    userId?: IntFilter<"EmailSchedule"> | number
+    scheduledFor?: DateTimeFilter<"EmailSchedule"> | Date | string
+    sent?: BoolFilter<"EmailSchedule"> | boolean
+    createdAt?: DateTimeFilter<"EmailSchedule"> | Date | string
+    updatedAt?: DateTimeFilter<"EmailSchedule"> | Date | string
+    movie?: XOR<MovieScalarRelationFilter, MovieWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type EmailScheduleOrderByWithRelationInput = {
+    id?: SortOrder
+    movieId?: SortOrder
+    userId?: SortOrder
+    scheduledFor?: SortOrder
+    sent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    movie?: MovieOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type EmailScheduleWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: EmailScheduleWhereInput | EmailScheduleWhereInput[]
+    OR?: EmailScheduleWhereInput[]
+    NOT?: EmailScheduleWhereInput | EmailScheduleWhereInput[]
+    movieId?: IntFilter<"EmailSchedule"> | number
+    userId?: IntFilter<"EmailSchedule"> | number
+    scheduledFor?: DateTimeFilter<"EmailSchedule"> | Date | string
+    sent?: BoolFilter<"EmailSchedule"> | boolean
+    createdAt?: DateTimeFilter<"EmailSchedule"> | Date | string
+    updatedAt?: DateTimeFilter<"EmailSchedule"> | Date | string
+    movie?: XOR<MovieScalarRelationFilter, MovieWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type EmailScheduleOrderByWithAggregationInput = {
+    id?: SortOrder
+    movieId?: SortOrder
+    userId?: SortOrder
+    scheduledFor?: SortOrder
+    sent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: EmailScheduleCountOrderByAggregateInput
+    _avg?: EmailScheduleAvgOrderByAggregateInput
+    _max?: EmailScheduleMaxOrderByAggregateInput
+    _min?: EmailScheduleMinOrderByAggregateInput
+    _sum?: EmailScheduleSumOrderByAggregateInput
+  }
+
+  export type EmailScheduleScalarWhereWithAggregatesInput = {
+    AND?: EmailScheduleScalarWhereWithAggregatesInput | EmailScheduleScalarWhereWithAggregatesInput[]
+    OR?: EmailScheduleScalarWhereWithAggregatesInput[]
+    NOT?: EmailScheduleScalarWhereWithAggregatesInput | EmailScheduleScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"EmailSchedule"> | number
+    movieId?: IntWithAggregatesFilter<"EmailSchedule"> | number
+    userId?: IntWithAggregatesFilter<"EmailSchedule"> | number
+    scheduledFor?: DateTimeWithAggregatesFilter<"EmailSchedule"> | Date | string
+    sent?: BoolWithAggregatesFilter<"EmailSchedule"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"EmailSchedule"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"EmailSchedule"> | Date | string
+  }
+
   export type UserCreateInput = {
     name: string
     email: string
@@ -3774,6 +5193,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     movies?: MovieCreateNestedManyWithoutUserInput
+    emailSchedules?: EmailScheduleCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -3784,6 +5204,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     movies?: MovieUncheckedCreateNestedManyWithoutUserInput
+    emailSchedules?: EmailScheduleUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -3793,6 +5214,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     movies?: MovieUpdateManyWithoutUserNestedInput
+    emailSchedules?: EmailScheduleUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -3803,6 +5225,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     movies?: MovieUncheckedUpdateManyWithoutUserNestedInput
+    emailSchedules?: EmailScheduleUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -3852,6 +5275,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutMoviesInput
+    emailSchedules?: EmailScheduleCreateNestedManyWithoutMovieInput
   }
 
   export type MovieUncheckedCreateInput = {
@@ -3876,6 +5300,7 @@ export namespace Prisma {
     trailerUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    emailSchedules?: EmailScheduleUncheckedCreateNestedManyWithoutMovieInput
   }
 
   export type MovieUpdateInput = {
@@ -3899,6 +5324,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutMoviesNestedInput
+    emailSchedules?: EmailScheduleUpdateManyWithoutMovieNestedInput
   }
 
   export type MovieUncheckedUpdateInput = {
@@ -3923,6 +5349,7 @@ export namespace Prisma {
     trailerUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailSchedules?: EmailScheduleUncheckedUpdateManyWithoutMovieNestedInput
   }
 
   export type MovieCreateManyInput = {
@@ -3995,6 +5422,71 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type EmailScheduleCreateInput = {
+    scheduledFor: Date | string
+    sent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    movie: MovieCreateNestedOneWithoutEmailSchedulesInput
+    user: UserCreateNestedOneWithoutEmailSchedulesInput
+  }
+
+  export type EmailScheduleUncheckedCreateInput = {
+    id?: number
+    movieId: number
+    userId: number
+    scheduledFor: Date | string
+    sent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmailScheduleUpdateInput = {
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    movie?: MovieUpdateOneRequiredWithoutEmailSchedulesNestedInput
+    user?: UserUpdateOneRequiredWithoutEmailSchedulesNestedInput
+  }
+
+  export type EmailScheduleUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    movieId?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailScheduleCreateManyInput = {
+    id?: number
+    movieId: number
+    userId: number
+    scheduledFor: Date | string
+    sent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmailScheduleUpdateManyMutationInput = {
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailScheduleUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    movieId?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -4038,7 +5530,17 @@ export namespace Prisma {
     none?: MovieWhereInput
   }
 
+  export type EmailScheduleListRelationFilter = {
+    every?: EmailScheduleWhereInput
+    some?: EmailScheduleWhereInput
+    none?: EmailScheduleWhereInput
+  }
+
   export type MovieOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type EmailScheduleOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -4259,6 +5761,66 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type MovieScalarRelationFilter = {
+    is?: MovieWhereInput
+    isNot?: MovieWhereInput
+  }
+
+  export type EmailScheduleCountOrderByAggregateInput = {
+    id?: SortOrder
+    movieId?: SortOrder
+    userId?: SortOrder
+    scheduledFor?: SortOrder
+    sent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EmailScheduleAvgOrderByAggregateInput = {
+    id?: SortOrder
+    movieId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type EmailScheduleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    movieId?: SortOrder
+    userId?: SortOrder
+    scheduledFor?: SortOrder
+    sent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EmailScheduleMinOrderByAggregateInput = {
+    id?: SortOrder
+    movieId?: SortOrder
+    userId?: SortOrder
+    scheduledFor?: SortOrder
+    sent?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EmailScheduleSumOrderByAggregateInput = {
+    id?: SortOrder
+    movieId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type MovieCreateNestedManyWithoutUserInput = {
     create?: XOR<MovieCreateWithoutUserInput, MovieUncheckedCreateWithoutUserInput> | MovieCreateWithoutUserInput[] | MovieUncheckedCreateWithoutUserInput[]
     connectOrCreate?: MovieCreateOrConnectWithoutUserInput | MovieCreateOrConnectWithoutUserInput[]
@@ -4266,11 +5828,25 @@ export namespace Prisma {
     connect?: MovieWhereUniqueInput | MovieWhereUniqueInput[]
   }
 
+  export type EmailScheduleCreateNestedManyWithoutUserInput = {
+    create?: XOR<EmailScheduleCreateWithoutUserInput, EmailScheduleUncheckedCreateWithoutUserInput> | EmailScheduleCreateWithoutUserInput[] | EmailScheduleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmailScheduleCreateOrConnectWithoutUserInput | EmailScheduleCreateOrConnectWithoutUserInput[]
+    createMany?: EmailScheduleCreateManyUserInputEnvelope
+    connect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+  }
+
   export type MovieUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<MovieCreateWithoutUserInput, MovieUncheckedCreateWithoutUserInput> | MovieCreateWithoutUserInput[] | MovieUncheckedCreateWithoutUserInput[]
     connectOrCreate?: MovieCreateOrConnectWithoutUserInput | MovieCreateOrConnectWithoutUserInput[]
     createMany?: MovieCreateManyUserInputEnvelope
     connect?: MovieWhereUniqueInput | MovieWhereUniqueInput[]
+  }
+
+  export type EmailScheduleUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<EmailScheduleCreateWithoutUserInput, EmailScheduleUncheckedCreateWithoutUserInput> | EmailScheduleCreateWithoutUserInput[] | EmailScheduleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmailScheduleCreateOrConnectWithoutUserInput | EmailScheduleCreateOrConnectWithoutUserInput[]
+    createMany?: EmailScheduleCreateManyUserInputEnvelope
+    connect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -4295,6 +5871,20 @@ export namespace Prisma {
     deleteMany?: MovieScalarWhereInput | MovieScalarWhereInput[]
   }
 
+  export type EmailScheduleUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EmailScheduleCreateWithoutUserInput, EmailScheduleUncheckedCreateWithoutUserInput> | EmailScheduleCreateWithoutUserInput[] | EmailScheduleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmailScheduleCreateOrConnectWithoutUserInput | EmailScheduleCreateOrConnectWithoutUserInput[]
+    upsert?: EmailScheduleUpsertWithWhereUniqueWithoutUserInput | EmailScheduleUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EmailScheduleCreateManyUserInputEnvelope
+    set?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    disconnect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    delete?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    connect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    update?: EmailScheduleUpdateWithWhereUniqueWithoutUserInput | EmailScheduleUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EmailScheduleUpdateManyWithWhereWithoutUserInput | EmailScheduleUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EmailScheduleScalarWhereInput | EmailScheduleScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -4317,6 +5907,20 @@ export namespace Prisma {
     deleteMany?: MovieScalarWhereInput | MovieScalarWhereInput[]
   }
 
+  export type EmailScheduleUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EmailScheduleCreateWithoutUserInput, EmailScheduleUncheckedCreateWithoutUserInput> | EmailScheduleCreateWithoutUserInput[] | EmailScheduleUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EmailScheduleCreateOrConnectWithoutUserInput | EmailScheduleCreateOrConnectWithoutUserInput[]
+    upsert?: EmailScheduleUpsertWithWhereUniqueWithoutUserInput | EmailScheduleUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EmailScheduleCreateManyUserInputEnvelope
+    set?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    disconnect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    delete?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    connect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    update?: EmailScheduleUpdateWithWhereUniqueWithoutUserInput | EmailScheduleUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EmailScheduleUpdateManyWithWhereWithoutUserInput | EmailScheduleUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EmailScheduleScalarWhereInput | EmailScheduleScalarWhereInput[]
+  }
+
   export type MovieCreategenresInput = {
     set: string[]
   }
@@ -4325,6 +5929,20 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutMoviesInput, UserUncheckedCreateWithoutMoviesInput>
     connectOrCreate?: UserCreateOrConnectWithoutMoviesInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type EmailScheduleCreateNestedManyWithoutMovieInput = {
+    create?: XOR<EmailScheduleCreateWithoutMovieInput, EmailScheduleUncheckedCreateWithoutMovieInput> | EmailScheduleCreateWithoutMovieInput[] | EmailScheduleUncheckedCreateWithoutMovieInput[]
+    connectOrCreate?: EmailScheduleCreateOrConnectWithoutMovieInput | EmailScheduleCreateOrConnectWithoutMovieInput[]
+    createMany?: EmailScheduleCreateManyMovieInputEnvelope
+    connect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+  }
+
+  export type EmailScheduleUncheckedCreateNestedManyWithoutMovieInput = {
+    create?: XOR<EmailScheduleCreateWithoutMovieInput, EmailScheduleUncheckedCreateWithoutMovieInput> | EmailScheduleCreateWithoutMovieInput[] | EmailScheduleUncheckedCreateWithoutMovieInput[]
+    connectOrCreate?: EmailScheduleCreateOrConnectWithoutMovieInput | EmailScheduleCreateOrConnectWithoutMovieInput[]
+    createMany?: EmailScheduleCreateManyMovieInputEnvelope
+    connect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -4346,6 +5964,66 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutMoviesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutMoviesInput, UserUpdateWithoutMoviesInput>, UserUncheckedUpdateWithoutMoviesInput>
+  }
+
+  export type EmailScheduleUpdateManyWithoutMovieNestedInput = {
+    create?: XOR<EmailScheduleCreateWithoutMovieInput, EmailScheduleUncheckedCreateWithoutMovieInput> | EmailScheduleCreateWithoutMovieInput[] | EmailScheduleUncheckedCreateWithoutMovieInput[]
+    connectOrCreate?: EmailScheduleCreateOrConnectWithoutMovieInput | EmailScheduleCreateOrConnectWithoutMovieInput[]
+    upsert?: EmailScheduleUpsertWithWhereUniqueWithoutMovieInput | EmailScheduleUpsertWithWhereUniqueWithoutMovieInput[]
+    createMany?: EmailScheduleCreateManyMovieInputEnvelope
+    set?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    disconnect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    delete?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    connect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    update?: EmailScheduleUpdateWithWhereUniqueWithoutMovieInput | EmailScheduleUpdateWithWhereUniqueWithoutMovieInput[]
+    updateMany?: EmailScheduleUpdateManyWithWhereWithoutMovieInput | EmailScheduleUpdateManyWithWhereWithoutMovieInput[]
+    deleteMany?: EmailScheduleScalarWhereInput | EmailScheduleScalarWhereInput[]
+  }
+
+  export type EmailScheduleUncheckedUpdateManyWithoutMovieNestedInput = {
+    create?: XOR<EmailScheduleCreateWithoutMovieInput, EmailScheduleUncheckedCreateWithoutMovieInput> | EmailScheduleCreateWithoutMovieInput[] | EmailScheduleUncheckedCreateWithoutMovieInput[]
+    connectOrCreate?: EmailScheduleCreateOrConnectWithoutMovieInput | EmailScheduleCreateOrConnectWithoutMovieInput[]
+    upsert?: EmailScheduleUpsertWithWhereUniqueWithoutMovieInput | EmailScheduleUpsertWithWhereUniqueWithoutMovieInput[]
+    createMany?: EmailScheduleCreateManyMovieInputEnvelope
+    set?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    disconnect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    delete?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    connect?: EmailScheduleWhereUniqueInput | EmailScheduleWhereUniqueInput[]
+    update?: EmailScheduleUpdateWithWhereUniqueWithoutMovieInput | EmailScheduleUpdateWithWhereUniqueWithoutMovieInput[]
+    updateMany?: EmailScheduleUpdateManyWithWhereWithoutMovieInput | EmailScheduleUpdateManyWithWhereWithoutMovieInput[]
+    deleteMany?: EmailScheduleScalarWhereInput | EmailScheduleScalarWhereInput[]
+  }
+
+  export type MovieCreateNestedOneWithoutEmailSchedulesInput = {
+    create?: XOR<MovieCreateWithoutEmailSchedulesInput, MovieUncheckedCreateWithoutEmailSchedulesInput>
+    connectOrCreate?: MovieCreateOrConnectWithoutEmailSchedulesInput
+    connect?: MovieWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutEmailSchedulesInput = {
+    create?: XOR<UserCreateWithoutEmailSchedulesInput, UserUncheckedCreateWithoutEmailSchedulesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEmailSchedulesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type MovieUpdateOneRequiredWithoutEmailSchedulesNestedInput = {
+    create?: XOR<MovieCreateWithoutEmailSchedulesInput, MovieUncheckedCreateWithoutEmailSchedulesInput>
+    connectOrCreate?: MovieCreateOrConnectWithoutEmailSchedulesInput
+    upsert?: MovieUpsertWithoutEmailSchedulesInput
+    connect?: MovieWhereUniqueInput
+    update?: XOR<XOR<MovieUpdateToOneWithWhereWithoutEmailSchedulesInput, MovieUpdateWithoutEmailSchedulesInput>, MovieUncheckedUpdateWithoutEmailSchedulesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutEmailSchedulesNestedInput = {
+    create?: XOR<UserCreateWithoutEmailSchedulesInput, UserUncheckedCreateWithoutEmailSchedulesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEmailSchedulesInput
+    upsert?: UserUpsertWithoutEmailSchedulesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEmailSchedulesInput, UserUpdateWithoutEmailSchedulesInput>, UserUncheckedUpdateWithoutEmailSchedulesInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -4458,6 +6136,19 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type MovieCreateWithoutUserInput = {
     title: string
     originalTitle: string
@@ -4478,6 +6169,7 @@ export namespace Prisma {
     trailerUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    emailSchedules?: EmailScheduleCreateNestedManyWithoutMovieInput
   }
 
   export type MovieUncheckedCreateWithoutUserInput = {
@@ -4501,6 +6193,7 @@ export namespace Prisma {
     trailerUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    emailSchedules?: EmailScheduleUncheckedCreateNestedManyWithoutMovieInput
   }
 
   export type MovieCreateOrConnectWithoutUserInput = {
@@ -4510,6 +6203,33 @@ export namespace Prisma {
 
   export type MovieCreateManyUserInputEnvelope = {
     data: MovieCreateManyUserInput | MovieCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type EmailScheduleCreateWithoutUserInput = {
+    scheduledFor: Date | string
+    sent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    movie: MovieCreateNestedOneWithoutEmailSchedulesInput
+  }
+
+  export type EmailScheduleUncheckedCreateWithoutUserInput = {
+    id?: number
+    movieId: number
+    scheduledFor: Date | string
+    sent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmailScheduleCreateOrConnectWithoutUserInput = {
+    where: EmailScheduleWhereUniqueInput
+    create: XOR<EmailScheduleCreateWithoutUserInput, EmailScheduleUncheckedCreateWithoutUserInput>
+  }
+
+  export type EmailScheduleCreateManyUserInputEnvelope = {
+    data: EmailScheduleCreateManyUserInput | EmailScheduleCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -4556,12 +6276,42 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Movie"> | Date | string
   }
 
+  export type EmailScheduleUpsertWithWhereUniqueWithoutUserInput = {
+    where: EmailScheduleWhereUniqueInput
+    update: XOR<EmailScheduleUpdateWithoutUserInput, EmailScheduleUncheckedUpdateWithoutUserInput>
+    create: XOR<EmailScheduleCreateWithoutUserInput, EmailScheduleUncheckedCreateWithoutUserInput>
+  }
+
+  export type EmailScheduleUpdateWithWhereUniqueWithoutUserInput = {
+    where: EmailScheduleWhereUniqueInput
+    data: XOR<EmailScheduleUpdateWithoutUserInput, EmailScheduleUncheckedUpdateWithoutUserInput>
+  }
+
+  export type EmailScheduleUpdateManyWithWhereWithoutUserInput = {
+    where: EmailScheduleScalarWhereInput
+    data: XOR<EmailScheduleUpdateManyMutationInput, EmailScheduleUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type EmailScheduleScalarWhereInput = {
+    AND?: EmailScheduleScalarWhereInput | EmailScheduleScalarWhereInput[]
+    OR?: EmailScheduleScalarWhereInput[]
+    NOT?: EmailScheduleScalarWhereInput | EmailScheduleScalarWhereInput[]
+    id?: IntFilter<"EmailSchedule"> | number
+    movieId?: IntFilter<"EmailSchedule"> | number
+    userId?: IntFilter<"EmailSchedule"> | number
+    scheduledFor?: DateTimeFilter<"EmailSchedule"> | Date | string
+    sent?: BoolFilter<"EmailSchedule"> | boolean
+    createdAt?: DateTimeFilter<"EmailSchedule"> | Date | string
+    updatedAt?: DateTimeFilter<"EmailSchedule"> | Date | string
+  }
+
   export type UserCreateWithoutMoviesInput = {
     name: string
     email: string
     password: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    emailSchedules?: EmailScheduleCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMoviesInput = {
@@ -4571,11 +6321,39 @@ export namespace Prisma {
     password: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    emailSchedules?: EmailScheduleUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMoviesInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutMoviesInput, UserUncheckedCreateWithoutMoviesInput>
+  }
+
+  export type EmailScheduleCreateWithoutMovieInput = {
+    scheduledFor: Date | string
+    sent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEmailSchedulesInput
+  }
+
+  export type EmailScheduleUncheckedCreateWithoutMovieInput = {
+    id?: number
+    userId: number
+    scheduledFor: Date | string
+    sent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmailScheduleCreateOrConnectWithoutMovieInput = {
+    where: EmailScheduleWhereUniqueInput
+    create: XOR<EmailScheduleCreateWithoutMovieInput, EmailScheduleUncheckedCreateWithoutMovieInput>
+  }
+
+  export type EmailScheduleCreateManyMovieInputEnvelope = {
+    data: EmailScheduleCreateManyMovieInput | EmailScheduleCreateManyMovieInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutMoviesInput = {
@@ -4595,6 +6373,7 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailSchedules?: EmailScheduleUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMoviesInput = {
@@ -4604,6 +6383,187 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailSchedules?: EmailScheduleUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type EmailScheduleUpsertWithWhereUniqueWithoutMovieInput = {
+    where: EmailScheduleWhereUniqueInput
+    update: XOR<EmailScheduleUpdateWithoutMovieInput, EmailScheduleUncheckedUpdateWithoutMovieInput>
+    create: XOR<EmailScheduleCreateWithoutMovieInput, EmailScheduleUncheckedCreateWithoutMovieInput>
+  }
+
+  export type EmailScheduleUpdateWithWhereUniqueWithoutMovieInput = {
+    where: EmailScheduleWhereUniqueInput
+    data: XOR<EmailScheduleUpdateWithoutMovieInput, EmailScheduleUncheckedUpdateWithoutMovieInput>
+  }
+
+  export type EmailScheduleUpdateManyWithWhereWithoutMovieInput = {
+    where: EmailScheduleScalarWhereInput
+    data: XOR<EmailScheduleUpdateManyMutationInput, EmailScheduleUncheckedUpdateManyWithoutMovieInput>
+  }
+
+  export type MovieCreateWithoutEmailSchedulesInput = {
+    title: string
+    originalTitle: string
+    coverImage: string
+    popularity: number
+    voteCount: number
+    score: number
+    tagline: string
+    synopsis: string
+    genres?: MovieCreategenresInput | string[]
+    releaseDate: Date | string
+    duration: number
+    status: string
+    language: string
+    budget: number
+    revenue: number
+    profit: number
+    trailerUrl: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutMoviesInput
+  }
+
+  export type MovieUncheckedCreateWithoutEmailSchedulesInput = {
+    id?: number
+    title: string
+    userId: number
+    originalTitle: string
+    coverImage: string
+    popularity: number
+    voteCount: number
+    score: number
+    tagline: string
+    synopsis: string
+    genres?: MovieCreategenresInput | string[]
+    releaseDate: Date | string
+    duration: number
+    status: string
+    language: string
+    budget: number
+    revenue: number
+    profit: number
+    trailerUrl: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MovieCreateOrConnectWithoutEmailSchedulesInput = {
+    where: MovieWhereUniqueInput
+    create: XOR<MovieCreateWithoutEmailSchedulesInput, MovieUncheckedCreateWithoutEmailSchedulesInput>
+  }
+
+  export type UserCreateWithoutEmailSchedulesInput = {
+    name: string
+    email: string
+    password: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    movies?: MovieCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutEmailSchedulesInput = {
+    id?: number
+    name: string
+    email: string
+    password: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    movies?: MovieUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutEmailSchedulesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutEmailSchedulesInput, UserUncheckedCreateWithoutEmailSchedulesInput>
+  }
+
+  export type MovieUpsertWithoutEmailSchedulesInput = {
+    update: XOR<MovieUpdateWithoutEmailSchedulesInput, MovieUncheckedUpdateWithoutEmailSchedulesInput>
+    create: XOR<MovieCreateWithoutEmailSchedulesInput, MovieUncheckedCreateWithoutEmailSchedulesInput>
+    where?: MovieWhereInput
+  }
+
+  export type MovieUpdateToOneWithWhereWithoutEmailSchedulesInput = {
+    where?: MovieWhereInput
+    data: XOR<MovieUpdateWithoutEmailSchedulesInput, MovieUncheckedUpdateWithoutEmailSchedulesInput>
+  }
+
+  export type MovieUpdateWithoutEmailSchedulesInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    originalTitle?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    popularity?: FloatFieldUpdateOperationsInput | number
+    voteCount?: IntFieldUpdateOperationsInput | number
+    score?: FloatFieldUpdateOperationsInput | number
+    tagline?: StringFieldUpdateOperationsInput | string
+    synopsis?: StringFieldUpdateOperationsInput | string
+    genres?: MovieUpdategenresInput | string[]
+    releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    duration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    budget?: FloatFieldUpdateOperationsInput | number
+    revenue?: FloatFieldUpdateOperationsInput | number
+    profit?: FloatFieldUpdateOperationsInput | number
+    trailerUrl?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutMoviesNestedInput
+  }
+
+  export type MovieUncheckedUpdateWithoutEmailSchedulesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    userId?: IntFieldUpdateOperationsInput | number
+    originalTitle?: StringFieldUpdateOperationsInput | string
+    coverImage?: StringFieldUpdateOperationsInput | string
+    popularity?: FloatFieldUpdateOperationsInput | number
+    voteCount?: IntFieldUpdateOperationsInput | number
+    score?: FloatFieldUpdateOperationsInput | number
+    tagline?: StringFieldUpdateOperationsInput | string
+    synopsis?: StringFieldUpdateOperationsInput | string
+    genres?: MovieUpdategenresInput | string[]
+    releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    duration?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    budget?: FloatFieldUpdateOperationsInput | number
+    revenue?: FloatFieldUpdateOperationsInput | number
+    profit?: FloatFieldUpdateOperationsInput | number
+    trailerUrl?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUpsertWithoutEmailSchedulesInput = {
+    update: XOR<UserUpdateWithoutEmailSchedulesInput, UserUncheckedUpdateWithoutEmailSchedulesInput>
+    create: XOR<UserCreateWithoutEmailSchedulesInput, UserUncheckedCreateWithoutEmailSchedulesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutEmailSchedulesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutEmailSchedulesInput, UserUncheckedUpdateWithoutEmailSchedulesInput>
+  }
+
+  export type UserUpdateWithoutEmailSchedulesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    movies?: MovieUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutEmailSchedulesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    movies?: MovieUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MovieCreateManyUserInput = {
@@ -4629,6 +6589,15 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type EmailScheduleCreateManyUserInput = {
+    id?: number
+    movieId: number
+    scheduledFor: Date | string
+    sent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type MovieUpdateWithoutUserInput = {
     title?: StringFieldUpdateOperationsInput | string
     originalTitle?: StringFieldUpdateOperationsInput | string
@@ -4649,6 +6618,7 @@ export namespace Prisma {
     trailerUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailSchedules?: EmailScheduleUpdateManyWithoutMovieNestedInput
   }
 
   export type MovieUncheckedUpdateWithoutUserInput = {
@@ -4672,6 +6642,7 @@ export namespace Prisma {
     trailerUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailSchedules?: EmailScheduleUncheckedUpdateManyWithoutMovieNestedInput
   }
 
   export type MovieUncheckedUpdateManyWithoutUserInput = {
@@ -4693,6 +6664,67 @@ export namespace Prisma {
     revenue?: FloatFieldUpdateOperationsInput | number
     profit?: FloatFieldUpdateOperationsInput | number
     trailerUrl?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailScheduleUpdateWithoutUserInput = {
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    movie?: MovieUpdateOneRequiredWithoutEmailSchedulesNestedInput
+  }
+
+  export type EmailScheduleUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    movieId?: IntFieldUpdateOperationsInput | number
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailScheduleUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    movieId?: IntFieldUpdateOperationsInput | number
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailScheduleCreateManyMovieInput = {
+    id?: number
+    userId: number
+    scheduledFor: Date | string
+    sent?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EmailScheduleUpdateWithoutMovieInput = {
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEmailSchedulesNestedInput
+  }
+
+  export type EmailScheduleUncheckedUpdateWithoutMovieInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailScheduleUncheckedUpdateManyWithoutMovieInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    sent?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

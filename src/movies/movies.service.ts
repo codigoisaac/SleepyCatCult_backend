@@ -9,20 +9,37 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Movie, Prisma } from '@root/generated/prisma';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class MoviesService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   async create(userId: number, createMovieDto: CreateMovieDto): Promise<Movie> {
     try {
-      return await this.prismaService.movie.create({
+      const movie = await this.prismaService.movie.create({
         data: {
           ...createMovieDto,
           releaseDate: new Date(createMovieDto.releaseDate),
           userId,
         },
       });
+
+      const releaseDate = new Date(createMovieDto.releaseDate);
+      const now = new Date();
+
+      if (releaseDate > now) {
+        await this.emailService.scheduleMovieReleaseEmail(
+          movie.id,
+          userId,
+          releaseDate,
+        );
+      }
+
+      return movie;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -110,6 +127,14 @@ export class MoviesService {
     }
 
     try {
+      const currentMovie = await this.prismaService.movie.findUnique({
+        where: { id },
+      });
+
+      if (!currentMovie) {
+        throw new NotFoundException(`Movie with ID ${id} not found`);
+      }
+
       const prismaData = {
         ...updateMovieDto,
         releaseDate: updateMovieDto.releaseDate
@@ -117,10 +142,28 @@ export class MoviesService {
           : undefined,
       };
 
-      return await this.prismaService.movie.update({
+      const updatedMovie = await this.prismaService.movie.update({
         where: { id },
         data: prismaData,
       });
+
+      if (updateMovieDto.releaseDate) {
+        const newReleaseDate = new Date(updateMovieDto.releaseDate);
+        const currentDate = new Date();
+
+        if (newReleaseDate > currentDate) {
+          await this.emailService.cancelMovieReleaseEmail(id);
+          await this.emailService.scheduleMovieReleaseEmail(
+            id,
+            currentMovie.userId,
+            newReleaseDate,
+          );
+        } else {
+          await this.emailService.cancelMovieReleaseEmail(id);
+        }
+      }
+
+      return updatedMovie;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
@@ -136,6 +179,8 @@ export class MoviesService {
 
   async remove(id: number): Promise<Movie> {
     try {
+      await this.emailService.cancelMovieReleaseEmail(id);
+
       return await this.prismaService.movie.delete({
         where: { id },
       });

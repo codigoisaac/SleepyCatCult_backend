@@ -153,6 +153,16 @@ exports.Prisma.MovieScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.EmailScheduleScalarFieldEnum = {
+  id: 'id',
+  movieId: 'movieId',
+  userId: 'userId',
+  scheduledFor: 'scheduledFor',
+  sent: 'sent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -166,7 +176,8 @@ exports.Prisma.QueryMode = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Movie: 'Movie'
+  Movie: 'Movie',
+  EmailSchedule: 'EmailSchedule'
 };
 
 /**
