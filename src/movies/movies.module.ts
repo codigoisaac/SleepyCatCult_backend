@@ -18,9 +18,11 @@ import { FileUploadMiddleware } from 'src/common/middlewares/file-upload.middlew
 })
 export class MoviesModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(FileUploadMiddleware).forRoutes({
-      path: 'movies/:id/cover-image',
-      method: RequestMethod.POST,
-    });
+    consumer.apply(FileUploadMiddleware).forRoutes(
+      // Rota para upload inicial de imagem
+      { path: 'movies/:id/cover-image', method: RequestMethod.POST },
+      // Rota para atualizar a imagem
+      { path: 'movies/:id/cover-image', method: RequestMethod.PATCH },
+    );
   }
 }

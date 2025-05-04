@@ -160,9 +160,259 @@ export class MoviesService {
   }
 
   /**
-   * Function that checks and cleans up old pending movies
-   * This prevents movies from staying without an image permanently
+   * Update only the data of an existing movie (not the image)
    */
+  async updateMovieData(
+    id: number,
+    updateMovieDto: UpdateMovieDto,
+    userId: number,
+  ): Promise<Movie> {
+    try {
+      const currentMovie = await this.prismaService.movie.findUnique({
+        where: { id },
+      });
+
+      if (!currentMovie) {
+        throw new NotFoundException(`Movie with ID ${id} not found`);
+      }
+
+      // Verify that the movie belongs to the user
+      if (currentMovie.userId !== userId) {
+        this.logger.warn(
+          `User ID ${userId} does not have permission to modify movie ID ${id}`,
+        );
+        throw new ForbiddenException(
+          'You do not have permission to modify this movie',
+        );
+      }
+
+      // Don't allow updates to movies without images
+      if (currentMovie.coverImage.startsWith('pending_')) {
+        throw new BadRequestException(
+          'Cannot update a movie without a cover image. Upload an image first.',
+        );
+      }
+
+      this.logger.log(`Updating data for movie ID: ${id}`);
+
+      const prismaData = {
+        ...updateMovieDto,
+        releaseDate: updateMovieDto.releaseDate
+          ? new Date(updateMovieDto.releaseDate)
+          : undefined,
+      };
+
+      const updatedMovie = await this.prismaService.movie.update({
+        where: { id },
+        data: prismaData,
+      });
+
+      // Update email schedules if release date changed
+      if (updateMovieDto.releaseDate) {
+        const newReleaseDate = new Date(updateMovieDto.releaseDate);
+        const currentDate = new Date();
+
+        if (newReleaseDate > currentDate) {
+          await this.emailService.cancelMovieReleaseEmail(id);
+          await this.emailService.scheduleMovieReleaseEmail(
+            id,
+            currentMovie.userId,
+            newReleaseDate,
+          );
+        } else {
+          await this.emailService.cancelMovieReleaseEmail(id);
+        }
+      }
+
+      this.logger.log(`✅ Data updated successfully for movie ID: ${id}`);
+      return updatedMovie;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(`Movie with ID ${id} not found`);
+        }
+        if (error.code === 'P2002') {
+          throw new ConflictException('Movie title must be unique');
+        }
+      }
+      throw new InternalServerErrorException(
+        'Failed to update movie data: ' + error.message,
+      );
+    }
+  }
+
+  /**
+   * Update only the cover image of an existing movie
+   */
+  async updateCoverImage(
+    id: number,
+    coverImageFile: any,
+    userId: number,
+  ): Promise<Movie> {
+    try {
+      this.logger.log(`Starting cover image update for movie ID: ${id}`);
+
+      // Check if the movie exists and belongs to the user
+      const movie = await this.prismaService.movie.findUnique({
+        where: { id },
+      });
+
+      if (!movie) {
+        this.logger.warn(`Movie ID ${id} not found`);
+        throw new NotFoundException(`Movie with ID ${id} not found`);
+      }
+
+      if (movie.userId !== userId) {
+        this.logger.warn(
+          `User ID ${userId} does not have permission to modify movie ID ${id}`,
+        );
+        throw new ForbiddenException(
+          'You do not have permission to modify this movie',
+        );
+      }
+
+      // Don't allow updates to movies without proper images
+      if (movie.coverImage.startsWith('pending_')) {
+        throw new BadRequestException(
+          'Cannot update image of a movie that is still waiting for its initial image. Use the upload endpoint instead.',
+        );
+      }
+
+      // Delete the old image
+      try {
+        this.logger.log(`Deleting old image: ${movie.coverImage}`);
+        await this.storageService.deleteFile(movie.coverImage);
+        this.logger.log('Old image deleted successfully');
+      } catch (error) {
+        this.logger.error('Failed to delete old image:', error);
+        // We continue even if deletion fails
+      }
+
+      // Upload the new image
+      this.logger.log('Starting upload of new image to Cloudflare R2');
+      const imageUrl = await this.storageService.uploadFile(coverImageFile);
+      this.logger.log(`Upload successful! Image URL: ${imageUrl}`);
+
+      // Update the movie with the URL of the new image
+      this.logger.log(`Updating movie ID ${id} record with the new image URL`);
+      const updatedMovie = await this.prismaService.movie.update({
+        where: { id },
+        data: {
+          coverImage: imageUrl,
+        },
+      });
+
+      this.logger.log(
+        `✅ Cover image updated successfully for movie ID: ${id} (${movie.title})`,
+      );
+      return updatedMovie;
+    } catch (error) {
+      this.logger.error(
+        `❌ Error during cover image update for movie ID ${id}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Legacy method that updates both data and image (kept for backward compatibility)
+   * @deprecated Use updateMovieData and updateCoverImage instead
+   */
+  async update(
+    id: number,
+    updateMovieDto: UpdateMovieDto,
+    coverImageFile?: any,
+  ): Promise<Movie> {
+    try {
+      this.logger.warn(
+        'Using deprecated update method that combines data and image update',
+      );
+
+      const currentMovie = await this.prismaService.movie.findUnique({
+        where: { id },
+      });
+
+      if (!currentMovie) {
+        throw new NotFoundException(`Movie with ID ${id} not found`);
+      }
+
+      // Don't allow updates to movies without images
+      if (currentMovie.coverImage.startsWith('pending_')) {
+        throw new BadRequestException(
+          'Cannot update a movie without a cover image. Upload an image first.',
+        );
+      }
+
+      // Handle upload of new image and deletion of old one, if needed
+      let imageUrl: string | undefined = undefined;
+
+      if (coverImageFile) {
+        this.logger.log(`Updating image for movie ID: ${id}`);
+
+        // Upload the new image
+        imageUrl = await this.storageService.uploadFile(coverImageFile);
+        this.logger.log(`New image uploaded. URL: ${imageUrl}`);
+
+        // Delete the old image
+        try {
+          this.logger.log(`Deleting old image: ${currentMovie.coverImage}`);
+          await this.storageService.deleteFile(currentMovie.coverImage);
+          this.logger.log('Old image deleted successfully');
+        } catch (error) {
+          this.logger.error('Failed to delete old image:', error);
+          // Don't let deletion error prevent the movie update
+        }
+      }
+
+      const prismaData = {
+        ...updateMovieDto,
+        ...(imageUrl && { coverImage: imageUrl }),
+        releaseDate: updateMovieDto.releaseDate
+          ? new Date(updateMovieDto.releaseDate)
+          : undefined,
+      };
+
+      const updatedMovie = await this.prismaService.movie.update({
+        where: { id },
+        data: prismaData,
+      });
+
+      if (updateMovieDto.releaseDate) {
+        const newReleaseDate = new Date(updateMovieDto.releaseDate);
+        const currentDate = new Date();
+
+        if (newReleaseDate > currentDate) {
+          await this.emailService.cancelMovieReleaseEmail(id);
+          await this.emailService.scheduleMovieReleaseEmail(
+            id,
+            currentMovie.userId,
+            newReleaseDate,
+          );
+        } else {
+          await this.emailService.cancelMovieReleaseEmail(id);
+        }
+      }
+
+      return updatedMovie;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(`Movie with ID ${id} not found`);
+        }
+        if (error.code === 'P2002') {
+          throw new ConflictException('Movie title must be unique');
+        }
+      }
+      throw new InternalServerErrorException(
+        'Failed to update movie: ' + error.message,
+      );
+    }
+  }
+
+  // ... setupCleanupJob, findAll, findOne, remove methods remain unchanged ...
+
+  // Método setupCleanupJob e outros métodos existentes continuam como estão...
   private setupCleanupJob() {
     // Run cleanup every minute to match MAX_PENDING_IMAGE_TIME
     const checkIntervalMs = 60 * 1000; // 1 minute
@@ -355,93 +605,6 @@ export class MoviesService {
     }
 
     return movie;
-  }
-
-  async update(
-    id: number,
-    updateMovieDto: UpdateMovieDto,
-    coverImageFile?: any,
-  ): Promise<Movie> {
-    try {
-      const currentMovie = await this.prismaService.movie.findUnique({
-        where: { id },
-      });
-
-      if (!currentMovie) {
-        throw new NotFoundException(`Movie with ID ${id} not found`);
-      }
-
-      // Don't allow updates to movies without images
-      if (currentMovie.coverImage.startsWith('pending_')) {
-        throw new BadRequestException(
-          'Cannot update a movie without a cover image. Upload an image first.',
-        );
-      }
-
-      // Handle upload of new image and deletion of old one, if needed
-      let imageUrl: string | undefined = undefined;
-
-      if (coverImageFile) {
-        this.logger.log(`Updating image for movie ID: ${id}`);
-
-        // Upload the new image
-        imageUrl = await this.storageService.uploadFile(coverImageFile);
-        this.logger.log(`New image uploaded. URL: ${imageUrl}`);
-
-        // Delete the old image
-        try {
-          this.logger.log(`Deleting old image: ${currentMovie.coverImage}`);
-          await this.storageService.deleteFile(currentMovie.coverImage);
-          this.logger.log('Old image deleted successfully');
-        } catch (error) {
-          this.logger.error('Failed to delete old image:', error);
-          // Don't let deletion error prevent the movie update
-        }
-      }
-
-      const prismaData = {
-        ...updateMovieDto,
-        ...(imageUrl && { coverImage: imageUrl }),
-        releaseDate: updateMovieDto.releaseDate
-          ? new Date(updateMovieDto.releaseDate)
-          : undefined,
-      };
-
-      const updatedMovie = await this.prismaService.movie.update({
-        where: { id },
-        data: prismaData,
-      });
-
-      if (updateMovieDto.releaseDate) {
-        const newReleaseDate = new Date(updateMovieDto.releaseDate);
-        const currentDate = new Date();
-
-        if (newReleaseDate > currentDate) {
-          await this.emailService.cancelMovieReleaseEmail(id);
-          await this.emailService.scheduleMovieReleaseEmail(
-            id,
-            currentMovie.userId,
-            newReleaseDate,
-          );
-        } else {
-          await this.emailService.cancelMovieReleaseEmail(id);
-        }
-      }
-
-      return updatedMovie;
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException(`Movie with ID ${id} not found`);
-        }
-        if (error.code === 'P2002') {
-          throw new ConflictException('Movie title must be unique');
-        }
-      }
-      throw new InternalServerErrorException(
-        'Failed to update movie: ' + error.message,
-      );
-    }
   }
 
   async remove(id: number): Promise<Movie> {

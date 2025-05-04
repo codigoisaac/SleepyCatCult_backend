@@ -18,6 +18,7 @@ import {
   BadRequestException,
   HttpCode,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -28,6 +29,7 @@ import { FilterMovieDto } from './dto/filter-movie.dto';
 
 @Controller('movies')
 export class MoviesController {
+  private readonly logger = new Logger(MoviesController.name);
   constructor(private readonly moviesService: MoviesService) {}
 
   // Endpoint 1: Create movie data (step 1)
@@ -39,7 +41,7 @@ export class MoviesController {
     @Body() createMovieDto: CreateMovieDto,
   ) {
     const userId = request.user.id;
-    console.log('Creating movie data:', createMovieDto.title);
+    this.logger.log(`Creating movie data: ${createMovieDto.title}`);
 
     // Create the movie with a placeholder for the image
     const movie = await this.moviesService.createInitial(
@@ -68,7 +70,7 @@ export class MoviesController {
       );
     }
 
-    console.log('Receiving image for movie ID:', id);
+    this.logger.log(`Receiving image for movie ID: ${id}`);
 
     try {
       // Update the movie with the real image
@@ -85,14 +87,17 @@ export class MoviesController {
     } catch (error) {
       // If there's an error during upload, we might want to delete the movie
       // to avoid a movie without an image
-      if (error.message.includes('not found') || error.status === 404) {
+      if (error.message?.includes('not found') || error.status === 404) {
         throw error; // If the movie doesn't exist, just pass the error
       }
 
       // If it's another type of error, try to rollback
-      console.error('Error uploading image:', error);
+      this.logger.error('Error uploading image:', error);
       await this.moviesService.remove(id).catch((e) => {
-        console.error('Error trying to remove movie after upload failure:', e);
+        this.logger.error(
+          'Error trying to remove movie after upload failure:',
+          e,
+        );
       });
 
       throw new BadRequestException(
@@ -117,27 +122,62 @@ export class MoviesController {
     return this.moviesService.findOne(id);
   }
 
-  // Update a movie
+  // Update movie data only (without image)
   @UseGuards(AuthGuard)
   @Patch(':id')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async update(
+  async updateMovie(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMovieDto: UpdateMovieDto,
-    @Request() request: { file?: any },
+    @Request() request: { user: User },
   ) {
-    // Debug logs
-    console.log('Updating movie with ID:', id);
-    console.log('Image file present:', request.file ? 'Yes' : 'No');
-
-    // Check if there's at least something to update (fields or image)
-    if (!request.file && Object.keys(updateMovieDto).length === 0) {
+    if (Object.keys(updateMovieDto).length === 0) {
       throw new BadRequestException(
-        'At least one field to update or a new cover image file is required.',
+        'At least one field to update is required.',
       );
     }
 
-    return this.moviesService.update(id, updateMovieDto, request.file);
+    this.logger.log(`Updating data for movie ID: ${id}`);
+    return this.moviesService.updateMovieData(
+      id,
+      updateMovieDto,
+      request.user.id,
+    );
+  }
+
+  // Update movie cover image only
+  @UseGuards(AuthGuard)
+  @Patch(':id/cover-image')
+  @HttpCode(HttpStatus.OK)
+  async updateCoverImage(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() request: { user: User; file?: any },
+  ) {
+    if (!request.file) {
+      throw new BadRequestException(
+        'Cover image file is required. Please upload an image file using multipart/form-data.',
+      );
+    }
+
+    this.logger.log(`Updating image for movie ID: ${id}`);
+
+    try {
+      const updatedMovie = await this.moviesService.updateCoverImage(
+        id,
+        request.file,
+        request.user.id,
+      );
+
+      return {
+        ...updatedMovie,
+        message: 'Cover image updated successfully.',
+      };
+    } catch (error) {
+      this.logger.error(`Error updating image for movie ${id}:`, error);
+      throw new BadRequestException(
+        `Failed to update cover image: ${error.message}`,
+      );
+    }
   }
 
   // Delete a movie
