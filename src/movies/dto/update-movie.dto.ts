@@ -8,6 +8,7 @@ import {
   Min,
   Max,
   IsUrl,
+  MaxLength,
 } from 'class-validator';
 
 export class UpdateMovieDto extends PartialType(CreateMovieDto) {
@@ -36,7 +37,7 @@ export class UpdateMovieDto extends PartialType(CreateMovieDto) {
   tagline?: string;
 
   @IsString()
-  @Max(1000)
+  @MaxLength(1000)
   synopsis?: string;
 
   @IsArray()

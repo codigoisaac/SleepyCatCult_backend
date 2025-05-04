@@ -7,6 +7,7 @@ import {
   IsUrl,
   Min,
   Max,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateMovieDto {
@@ -35,7 +36,7 @@ export class CreateMovieDto {
   tagline: string;
 
   @IsString()
-  @Max(1000)
+  @MaxLength(1000)
   synopsis: string;
 
   @IsArray()
