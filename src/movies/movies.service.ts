@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable no-useless-catch */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -13,39 +17,41 @@ import { Movie, Prisma } from '@root/generated/prisma';
 import { EmailService } from 'src/email/email.service';
 import { StorageService } from 'src/storage/storage.service';
 
+// Tempo máximo (em minutos) que um filme pode ficar sem imagem
+const MAX_PENDING_IMAGE_TIME = 30;
+
 @Injectable()
 export class MoviesService {
   constructor(
     private prismaService: PrismaService,
     private emailService: EmailService,
     private storageService: StorageService,
-  ) {}
+  ) {
+    // Configurar limpeza periódica de filmes sem imagem (opcional)
+    this.setupCleanupJob();
+  }
 
-  async create(
+  /**
+   * Etapa 1: Criar filme inicial com dados básicos, mas sem imagem ainda
+   */
+  async createInitial(
     userId: number,
     createMovieDto: CreateMovieDto,
-    coverImageFile: any,
   ): Promise<Movie> {
     try {
-      // Verificamos novamente se o arquivo de imagem está presente
-      if (!coverImageFile) {
-        throw new BadRequestException('Cover image file is required');
-      }
-
-      // Fazemos o upload do arquivo para o Cloudflare R2
-      const coverImageUrl =
-        await this.storageService.uploadFile(coverImageFile);
-
-      // Criamos o filme no banco de dados com a URL da imagem
+      // Criar o filme com um placeholder para a imagem
+      // Usamos um timestamp para saber quando o filme foi criado sem imagem
       const movie = await this.prismaService.movie.create({
         data: {
           ...createMovieDto,
-          coverImage: coverImageUrl,
+          // Definimos um marcador para identificar que este filme está aguardando imagem
+          coverImage: `pending_${Date.now()}`,
           releaseDate: new Date(createMovieDto.releaseDate),
           userId,
         },
       });
 
+      // Agendar e-mail de lançamento, se aplicável
       const releaseDate = new Date(createMovieDto.releaseDate);
       const now = new Date();
 
@@ -70,6 +76,187 @@ export class MoviesService {
     }
   }
 
+  /**
+   * Etapa 2: Fazer upload da imagem para um filme existente
+   */
+  async uploadCoverImage(
+    id: number,
+    coverImageFile: any,
+    userId: number,
+  ): Promise<Movie> {
+    try {
+      // Verificar se o filme existe e pertence ao usuário
+      const movie = await this.prismaService.movie.findUnique({
+        where: { id },
+      });
+
+      if (!movie) {
+        throw new NotFoundException(`Movie with ID ${id} not found`);
+      }
+
+      if (movie.userId !== userId) {
+        throw new ForbiddenException(
+          'You do not have permission to modify this movie',
+        );
+      }
+
+      // Verificar se o filme está aguardando imagem (começa com 'pending_')
+      const isPending = movie.coverImage.startsWith('pending_');
+
+      // Se não estiver pendente, significa que já tem uma imagem
+      // Nesse caso, vamos excluir a imagem antiga antes de fazer upload da nova
+      if (
+        !isPending &&
+        (movie.coverImage.includes('r2.cloudflarestorage.com') ||
+          movie.coverImage.includes(process.env.R2_CDN_DOMAIN as string))
+      ) {
+        try {
+          await this.storageService.deleteFile(movie.coverImage);
+        } catch (error) {
+          console.error('Failed to delete old image:', error);
+          // Continuamos mesmo se a exclusão falhar
+        }
+      }
+
+      // Fazer upload da nova imagem
+      const coverImageUrl =
+        await this.storageService.uploadFile(coverImageFile);
+
+      // Atualizar o filme com a URL da nova imagem
+      const updatedMovie = await this.prismaService.movie.update({
+        where: { id },
+        data: {
+          coverImage: coverImageUrl,
+        },
+      });
+
+      return updatedMovie;
+    } catch (error) {
+      // Se ocorrer um erro durante o upload, não queremos deixar o filme sem imagem
+      // O controller decidirá se deve excluir o filme
+      throw error;
+    }
+  }
+
+  /**
+   * Função que verifica e limpa filmes pendentes antigos
+   * Isso evita que filmes fiquem sem imagem permanentemente
+   */
+  private setupCleanupJob() {
+    // Executar a limpeza a cada 10 minutos
+    setInterval(
+      async () => {
+        try {
+          const now = Date.now();
+          const movies = await this.prismaService.movie.findMany({
+            where: {
+              coverImage: {
+                startsWith: 'pending_',
+              },
+            },
+          });
+
+          for (const movie of movies) {
+            // Extrair o timestamp do placeholder
+            const timestamp = parseInt(
+              movie.coverImage.replace('pending_', ''),
+              10,
+            );
+
+            // Verificar se passou o tempo máximo permitido
+            if (now - timestamp > MAX_PENDING_IMAGE_TIME * 60 * 1000) {
+              console.log(
+                `Removing movie ${movie.id} that has been without image for too long`,
+              );
+              await this.remove(movie.id);
+            }
+          }
+        } catch (error) {
+          console.error('Error in cleanup job:', error);
+        }
+      },
+      10 * 60 * 1000,
+    ); // 10 minutos
+  }
+
+  // O resto do código permanece o mesmo...
+
+  async findAll({
+    durationMin,
+    durationMax,
+    releaseDateMin,
+    releaseDateMax,
+    title,
+    scoreMin,
+    scoreMax,
+    paginationPage = 1,
+    paginationPerPage = 10,
+  }: {
+    durationMin?: number;
+    durationMax?: number;
+    releaseDateMin?: string;
+    releaseDateMax?: string;
+    title?: string;
+    scoreMin?: number;
+    scoreMax?: number;
+    paginationPage?: number;
+    paginationPerPage?: number;
+  }) {
+    const take = Math.min(Math.max(paginationPerPage, 10), 50);
+    const skip = (paginationPage - 1) * take;
+
+    return await this.prismaService.movie.findMany({
+      where: {
+        duration: {
+          gte: durationMin ?? undefined,
+          lte: durationMax ?? undefined,
+        },
+        releaseDate: {
+          gte: releaseDateMin ? new Date(releaseDateMin) : undefined,
+          lte: releaseDateMax ? new Date(releaseDateMax) : undefined,
+        },
+        title: title
+          ? {
+              contains: title,
+              mode: 'insensitive',
+            }
+          : undefined,
+        score: {
+          gte: scoreMin ?? undefined,
+          lte: scoreMax ?? undefined,
+        },
+        // Não mostrar filmes com imagem pendente
+        coverImage: {
+          not: {
+            startsWith: 'pending_',
+          },
+        },
+      },
+      take,
+      skip,
+      orderBy: {
+        releaseDate: 'desc',
+      },
+    });
+  }
+
+  async findOne(id: number): Promise<Movie> {
+    const movie = await this.prismaService.movie.findUnique({
+      where: { id },
+    });
+
+    if (!movie) {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
+    }
+
+    // Se o filme ainda estiver aguardando imagem, não permitir acesso
+    if (movie.coverImage.startsWith('pending_')) {
+      throw new BadRequestException('This movie is still being processed');
+    }
+
+    return movie;
+  }
+
   async update(
     id: number,
     updateMovieDto: UpdateMovieDto,
@@ -82,6 +269,13 @@ export class MoviesService {
 
       if (!currentMovie) {
         throw new NotFoundException(`Movie with ID ${id} not found`);
+      }
+
+      // Não permitir atualização de filmes sem imagem
+      if (currentMovie.coverImage.startsWith('pending_')) {
+        throw new BadRequestException(
+          'Cannot update a movie without a cover image. Upload an image first.',
+        );
       }
 
       // Gerenciar upload de nova imagem e exclusão da antiga, se necessário
@@ -153,73 +347,6 @@ export class MoviesService {
     }
   }
 
-  // O restante do código permanece o mesmo
-
-  async findAll({
-    durationMin,
-    durationMax,
-    releaseDateMin,
-    releaseDateMax,
-    title,
-    scoreMin,
-    scoreMax,
-    paginationPage = 1,
-    paginationPerPage = 10,
-  }: {
-    durationMin?: number;
-    durationMax?: number;
-    releaseDateMin?: string;
-    releaseDateMax?: string;
-    title?: string;
-    scoreMin?: number;
-    scoreMax?: number;
-    paginationPage?: number;
-    paginationPerPage?: number;
-  }) {
-    const take = Math.min(Math.max(paginationPerPage, 10), 50);
-    const skip = (paginationPage - 1) * take;
-
-    return await this.prismaService.movie.findMany({
-      where: {
-        duration: {
-          gte: durationMin ?? undefined,
-          lte: durationMax ?? undefined,
-        },
-        releaseDate: {
-          gte: releaseDateMin ? new Date(releaseDateMin) : undefined,
-          lte: releaseDateMax ? new Date(releaseDateMax) : undefined,
-        },
-        title: title
-          ? {
-              contains: title,
-              mode: 'insensitive',
-            }
-          : undefined,
-        score: {
-          gte: scoreMin ?? undefined,
-          lte: scoreMax ?? undefined,
-        },
-      },
-      take,
-      skip,
-      orderBy: {
-        releaseDate: 'desc',
-      },
-    });
-  }
-
-  async findOne(id: number): Promise<Movie> {
-    const movie = await this.prismaService.movie.findUnique({
-      where: { id },
-    });
-
-    if (!movie) {
-      throw new NotFoundException(`Movie with ID ${id} not found`);
-    }
-
-    return movie;
-  }
-
   async remove(id: number): Promise<Movie> {
     try {
       // Buscar o filme antes de excluir para obter a URL da imagem
@@ -239,9 +366,10 @@ export class MoviesService {
         where: { id },
       });
 
-      // Excluir a imagem do storage
+      // Excluir a imagem do storage (somente se não for um placeholder)
       if (
         movie.coverImage &&
+        !movie.coverImage.startsWith('pending_') &&
         (movie.coverImage.includes('r2.cloudflarestorage.com') ||
           movie.coverImage.includes(process.env.R2_CDN_DOMAIN as string))
       ) {

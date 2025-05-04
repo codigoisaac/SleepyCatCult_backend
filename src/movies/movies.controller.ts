@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import {
   Controller,
   Get,
@@ -13,6 +16,8 @@ import {
   Query,
   ParseIntPipe,
   BadRequestException,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -25,30 +30,75 @@ import { FilterMovieDto } from './dto/filter-movie.dto';
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
+  // Endpoint 1: Criar apenas os dados do filme (sem imagem)
   @UseGuards(AuthGuard)
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
-  create(
-    @Request() request: { user: User; file?: any },
+  async createMovie(
+    @Request() request: { user: User },
     @Body() createMovieDto: CreateMovieDto,
   ) {
     const userId = request.user.id;
+    console.log('Criando dados do filme:', createMovieDto.title);
 
-    // Verificar obrigatoriamente a presença do arquivo de imagem
+    // Cria o filme com um placeholder para a imagem
+    const movie = await this.moviesService.createInitial(
+      userId,
+      createMovieDto,
+    );
+
+    return {
+      ...movie,
+      message: 'Filme criado com sucesso. Faça upload da imagem de capa.',
+      uploadEndpoint: `/movies/${movie.id}/cover-image`,
+    };
+  }
+
+  // Endpoint 2: Fazer upload da imagem para um filme já criado
+  @UseGuards(AuthGuard)
+  @Post(':id/cover-image')
+  @HttpCode(HttpStatus.OK)
+  async uploadCoverImage(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() request: { user: User; file?: any },
+  ) {
     if (!request.file) {
       throw new BadRequestException(
         'Cover image file is required. Please upload an image file using multipart/form-data.',
       );
     }
 
-    console.log(
-      'Criando filme:',
-      createMovieDto.title,
-      'com imagem:',
-      request.file ? 'Arquivo enviado' : 'Sem arquivo (erro)',
-    );
+    console.log('Recebendo imagem para o filme ID:', id);
 
-    return this.moviesService.create(userId, createMovieDto, request.file);
+    try {
+      // Atualiza o filme com a imagem real
+      const updatedMovie = await this.moviesService.uploadCoverImage(
+        id,
+        request.file,
+        request.user.id,
+      );
+
+      return {
+        ...updatedMovie,
+        message: 'Imagem de capa atualizada com sucesso.',
+      };
+    } catch (error) {
+      // Se ocorrer um erro no upload, podemos decidir excluir o filme
+      // para evitar um filme sem imagem
+      if (error.message.includes('not found') || error.status === 404) {
+        throw error; // Se o filme não existe, apenas repassa o erro
+      }
+
+      // Se for outro tipo de erro, tenta fazer rollback
+      console.error('Erro ao fazer upload de imagem:', error);
+      await this.moviesService.remove(id).catch((e) => {
+        console.error('Erro ao tentar remover filme após falha no upload:', e);
+      });
+
+      throw new BadRequestException(
+        'Erro ao fazer upload da imagem. O filme foi removido para manter a consistência dos dados.',
+      );
+    }
   }
 
   // exemplos de uso:

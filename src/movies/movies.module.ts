@@ -9,7 +9,7 @@ import { MoviesController } from './movies.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EmailModule } from 'src/email/email.module';
 import { StorageModule } from 'src/storage/storage.module';
-import { FileUploadMiddleware } from '@src/common/middlewares/file-upload.middleware';
+import { FileUploadMiddleware } from 'src/common/middlewares/file-upload.middleware';
 
 @Module({
   imports: [EmailModule, StorageModule],
@@ -18,11 +18,9 @@ import { FileUploadMiddleware } from '@src/common/middlewares/file-upload.middle
 })
 export class MoviesModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(FileUploadMiddleware)
-      .forRoutes(
-        { path: 'movies', method: RequestMethod.POST },
-        { path: 'movies/:id', method: RequestMethod.PATCH },
-      );
+    consumer.apply(FileUploadMiddleware).forRoutes({
+      path: 'movies/:id/cover-image',
+      method: RequestMethod.POST,
+    });
   }
 }

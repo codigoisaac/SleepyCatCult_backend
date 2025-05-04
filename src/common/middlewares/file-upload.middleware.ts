@@ -45,8 +45,8 @@ export class FileUploadMiddleware implements NestMiddleware {
   });
 
   use(req: Request, res: Response, next: NextFunction) {
-    // Para criar um filme (POST /movies), o arquivo é obrigatório
-    if (req.method === 'POST' && req.originalUrl.endsWith('/movies')) {
+    // Somente aplicar o middleware se a rota for para upload de imagem
+    if (req.path.match(/\/movies\/\d+\/cover-image$/)) {
       this.upload.single('coverImage')(req, res, (err) => {
         if (err) {
           console.error('Erro no middleware de upload:', err);
@@ -67,22 +67,7 @@ export class FileUploadMiddleware implements NestMiddleware {
         next();
       });
     }
-    // Para atualizar um filme (PATCH /movies/:id), o arquivo é opcional
-    else if (req.method === 'PATCH' && req.originalUrl.includes('/movies/')) {
-      this.upload.single('coverImage')(req, res, (err) => {
-        if (err) {
-          console.error('Erro no middleware de upload:', err);
-          return res.status(400).json({
-            message: 'Erro no upload do arquivo',
-            error: err.message,
-          });
-        }
-
-        // Aqui não verificamos req.file porque é opcional na atualização
-        next();
-      });
-    }
-    // Para outros endpoints, apenas continua
+    // Para outras rotas, apenas continua
     else {
       next();
     }
