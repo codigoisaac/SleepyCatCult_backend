@@ -12,7 +12,9 @@ import { ConfigModule } from '@nestjs/config';
     MoviesModule,
     EmailModule,
     StorageModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
   ],
   controllers: [],
   providers: [PrismaService],
