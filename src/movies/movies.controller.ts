@@ -32,7 +32,6 @@ export class MoviesController {
   private readonly logger = new Logger(MoviesController.name);
   constructor(private readonly moviesService: MoviesService) {}
 
-  // Endpoint 1: Create movie data (step 1)
   @UseGuards(AuthGuard)
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -43,7 +42,6 @@ export class MoviesController {
     const userId = request.user.id;
     this.logger.log(`Creating movie data: ${createMovieDto.title}`);
 
-    // Create the movie with a placeholder for the image
     const movie = await this.moviesService.createInitial(
       userId,
       createMovieDto,
@@ -56,7 +54,6 @@ export class MoviesController {
     };
   }
 
-  // Endpoint 2: Upload cover image for an existing movie
   @UseGuards(AuthGuard)
   @Post(':id/cover-image')
   @HttpCode(HttpStatus.OK)
@@ -73,7 +70,6 @@ export class MoviesController {
     this.logger.log(`Receiving image for movie ID: ${id}`);
 
     try {
-      // Update the movie with the real image
       const updatedMovie = await this.moviesService.uploadCoverImage(
         id,
         request.file,
@@ -85,13 +81,10 @@ export class MoviesController {
         message: 'Cover image updated successfully.',
       };
     } catch (error) {
-      // If there's an error during upload, we might want to delete the movie
-      // to avoid a movie without an image
       if (error.message?.includes('not found') || error.status === 404) {
-        throw error; // If the movie doesn't exist, just pass the error
+        throw error;
       }
 
-      // If it's another type of error, try to rollback
       this.logger.error('Error uploading image:', error);
       await this.moviesService.remove(id).catch((e) => {
         this.logger.error(
@@ -106,7 +99,6 @@ export class MoviesController {
     }
   }
 
-  // Get movies list with filter options
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
   findAll(@Query() filterDto: FilterMovieDto) {
@@ -115,14 +107,12 @@ export class MoviesController {
     });
   }
 
-  // Get a specific movie by ID
   @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.moviesService.findOne(id);
   }
 
-  // Update movie data only (without image)
   @UseGuards(AuthGuard)
   @Patch(':id')
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -145,7 +135,6 @@ export class MoviesController {
     );
   }
 
-  // Update movie cover image only
   @UseGuards(AuthGuard)
   @Patch(':id/cover-image')
   @HttpCode(HttpStatus.OK)
@@ -180,7 +169,6 @@ export class MoviesController {
     }
   }
 
-  // Delete a movie
   @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
