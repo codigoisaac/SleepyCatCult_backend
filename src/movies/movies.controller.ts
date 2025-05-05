@@ -99,6 +99,7 @@ export class MoviesController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
   findAll(@Query() filterDto: FilterMovieDto) {

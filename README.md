@@ -386,7 +386,7 @@ Esta arquitetura facilita a manutenção e adição de novos recursos, seguindo 
 | ------ | ------------------------- | ------------------------------------- | ------------ |
 | POST   | `/movies`                 | Cria dados iniciais do filme          | Sim          |
 | POST   | `/movies/:id/cover-image` | Faz upload da imagem de capa          | Sim          |
-| GET    | `/movies`                 | Lista filmes com filtros e paginação  | Não          |
+| GET    | `/movies`                 | Lista filmes com filtros e paginação  | Sim          |
 | GET    | `/movies/:id`             | Obtém detalhes de um filme específico | Sim          |
 | PATCH  | `/movies/:id`             | Atualiza dados do filme               | Sim          |
 | PATCH  | `/movies/:id/cover-image` | Atualiza apenas a imagem de capa      | Sim          |
