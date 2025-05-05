@@ -100,6 +100,8 @@ R2_PUBLIC_DEV_URL="https://seu-bucket.seu-account-id.r2.dev"
     yarn start:dev
     ```
 
+[Voltar ao sumário](#sum%C3%A1rio)
+
 ### Configuração do cliente de email Ethereal
 
 O sistema utiliza o Ethereal Email como serviço de teste para envio de emails. É uma ferramenta que simula o envio de emails sem realmente entregá-los, ideal para desenvolvimento e testes.
