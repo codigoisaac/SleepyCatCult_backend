@@ -29,7 +29,7 @@ export class FilterMovieDto {
 
   @IsString()
   @IsOptional()
-  title?: string;
+  search?: string;
 
   @IsNumber()
   @Min(0)

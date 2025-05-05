@@ -438,7 +438,7 @@ export class MoviesService {
     durationMax,
     releaseDateMin,
     releaseDateMax,
-    title,
+    search,
     scoreMin,
     scoreMax,
     paginationPage = 1,
@@ -448,7 +448,7 @@ export class MoviesService {
     durationMax?: number;
     releaseDateMin?: string;
     releaseDateMax?: string;
-    title?: string;
+    search?: string;
     scoreMin?: number;
     scoreMax?: number;
     paginationPage?: number;
@@ -467,12 +467,41 @@ export class MoviesService {
           gte: releaseDateMin ? new Date(releaseDateMin) : undefined,
           lte: releaseDateMax ? new Date(releaseDateMax) : undefined,
         },
-        title: title
+        ...(search
           ? {
-              contains: title,
-              mode: 'insensitive',
+              OR: [
+                {
+                  title: {
+                    contains: search,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  originalTitle: {
+                    contains: search,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  tagline: {
+                    contains: search,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  synopsis: {
+                    contains: search,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  genres: {
+                    has: search, // This searches for an exact match in the genres array
+                  },
+                },
+              ],
             }
-          : undefined,
+          : {}),
         score: {
           gte: scoreMin ?? undefined,
           lte: scoreMax ?? undefined,
