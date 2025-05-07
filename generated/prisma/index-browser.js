@@ -134,7 +134,7 @@ exports.Prisma.MovieScalarFieldEnum = {
   title: 'title',
   userId: 'userId',
   originalTitle: 'originalTitle',
-  coverImage: 'coverImage',
+  coverImageUrl: 'coverImageUrl',
   popularity: 'popularity',
   voteCount: 'voteCount',
   score: 'score',

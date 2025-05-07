@@ -48,7 +48,7 @@ export class MoviesService {
         data: {
           ...createMovieDto,
           // Set a marker to identify that this movie is waiting for an image
-          coverImage: `pending_${Date.now()}`,
+          coverImageUrl: `pending_${Date.now()}`,
           releaseDate: new Date(createMovieDto.releaseDate),
           userId,
         },
@@ -112,7 +112,7 @@ export class MoviesService {
       }
 
       // Check if the movie is waiting for an image (starts with 'pending_')
-      const isPending = movie.coverImage.startsWith('pending_');
+      const isPending = movie.coverImageUrl.startsWith('pending_');
       this.logger.log(
         `Movie ID ${id} status: ${isPending ? 'Waiting for image' : 'Already has an image'}`,
       );
@@ -121,8 +121,8 @@ export class MoviesService {
       // In that case, we'll delete the old image before uploading a new one
       if (!isPending) {
         try {
-          this.logger.log(`Deleting old image: ${movie.coverImage}`);
-          await this.storageService.deleteFile(movie.coverImage);
+          this.logger.log(`Deleting old image: ${movie.coverImageUrl}`);
+          await this.storageService.deleteFile(movie.coverImageUrl);
           this.logger.log('Old image deleted successfully');
         } catch (error) {
           this.logger.error('Failed to delete old image:', error);
@@ -140,7 +140,7 @@ export class MoviesService {
       const updatedMovie = await this.prismaService.movie.update({
         where: { id },
         data: {
-          coverImage: imageUrl,
+          coverImageUrl: imageUrl,
         },
       });
 
@@ -187,7 +187,7 @@ export class MoviesService {
       }
 
       // Don't allow updates to movies without images
-      if (currentMovie.coverImage.startsWith('pending_')) {
+      if (currentMovie.coverImageUrl.startsWith('pending_')) {
         throw new BadRequestException(
           'Cannot update a movie without a cover image. Upload an image first.',
         );
@@ -276,7 +276,7 @@ export class MoviesService {
       }
 
       // Don't allow updates to movies without proper images
-      if (movie.coverImage.startsWith('pending_')) {
+      if (movie.coverImageUrl.startsWith('pending_')) {
         throw new BadRequestException(
           'Cannot update image of a movie that is still waiting for its initial image. Use the upload endpoint instead.',
         );
@@ -284,8 +284,8 @@ export class MoviesService {
 
       // Delete the old image
       try {
-        this.logger.log(`Deleting old image: ${movie.coverImage}`);
-        await this.storageService.deleteFile(movie.coverImage);
+        this.logger.log(`Deleting old image: ${movie.coverImageUrl}`);
+        await this.storageService.deleteFile(movie.coverImageUrl);
         this.logger.log('Old image deleted successfully');
       } catch (error) {
         this.logger.error('Failed to delete old image:', error);
@@ -302,7 +302,7 @@ export class MoviesService {
       const updatedMovie = await this.prismaService.movie.update({
         where: { id },
         data: {
-          coverImage: imageUrl,
+          coverImageUrl: imageUrl,
         },
       });
 
@@ -337,7 +337,7 @@ export class MoviesService {
 
         const pendingMovies = await this.prismaService.movie.findMany({
           where: {
-            coverImage: {
+            coverImageUrl: {
               startsWith: 'pending_',
             },
           },
@@ -356,7 +356,7 @@ export class MoviesService {
         // First pass: categorize movies as expired or still active
         for (const movie of pendingMovies) {
           const timestamp = parseInt(
-            movie.coverImage.replace('pending_', ''),
+            movie.coverImageUrl.replace('pending_', ''),
             10,
           );
           const ageInMinutes = (now - timestamp) / (60 * 1000);
@@ -511,7 +511,7 @@ export class MoviesService {
           lte: scoreMax ?? undefined,
         },
         // Don't show movies with pending images
-        coverImage: {
+        coverImageUrl: {
           not: {
             startsWith: 'pending_',
           },
@@ -535,7 +535,7 @@ export class MoviesService {
     }
 
     // If the movie is still waiting for an image, don't allow access
-    if (movie.coverImage.startsWith('pending_')) {
+    if (movie.coverImageUrl.startsWith('pending_')) {
       throw new BadRequestException('This movie is still being processed');
     }
 
@@ -562,12 +562,12 @@ export class MoviesService {
       });
 
       // Delete the image from storage (only if it's not a placeholder)
-      if (movie.coverImage && !movie.coverImage.startsWith('pending_')) {
+      if (movie.coverImageUrl && !movie.coverImageUrl.startsWith('pending_')) {
         try {
           this.logger.log(
-            `Deleting image for movie ${id}: ${movie.coverImage}`,
+            `Deleting image for movie ${id}: ${movie.coverImageUrl}`,
           );
-          await this.storageService.deleteFile(movie.coverImage);
+          await this.storageService.deleteFile(movie.coverImageUrl);
           this.logger.log(`Image for movie ${id} deleted successfully`);
         } catch (error) {
           this.logger.error('Failed to delete image:', error);

@@ -26,7 +26,7 @@ model Movie {
   user           User            @relation(fields: [userId], references: [id])
   emailSchedules EmailSchedule[]
   originalTitle  String
-  coverImage     String
+  coverImageUrl  String
   popularity     Float
   voteCount      Int
   score          Float

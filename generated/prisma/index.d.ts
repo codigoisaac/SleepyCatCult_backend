@@ -2307,7 +2307,7 @@ export namespace Prisma {
     title: string | null
     userId: number | null
     originalTitle: string | null
-    coverImage: string | null
+    coverImageUrl: string | null
     popularity: number | null
     voteCount: number | null
     score: number | null
@@ -2330,7 +2330,7 @@ export namespace Prisma {
     title: string | null
     userId: number | null
     originalTitle: string | null
-    coverImage: string | null
+    coverImageUrl: string | null
     popularity: number | null
     voteCount: number | null
     score: number | null
@@ -2353,7 +2353,7 @@ export namespace Prisma {
     title: number
     userId: number
     originalTitle: number
-    coverImage: number
+    coverImageUrl: number
     popularity: number
     voteCount: number
     score: number
@@ -2403,7 +2403,7 @@ export namespace Prisma {
     title?: true
     userId?: true
     originalTitle?: true
-    coverImage?: true
+    coverImageUrl?: true
     popularity?: true
     voteCount?: true
     score?: true
@@ -2426,7 +2426,7 @@ export namespace Prisma {
     title?: true
     userId?: true
     originalTitle?: true
-    coverImage?: true
+    coverImageUrl?: true
     popularity?: true
     voteCount?: true
     score?: true
@@ -2449,7 +2449,7 @@ export namespace Prisma {
     title?: true
     userId?: true
     originalTitle?: true
-    coverImage?: true
+    coverImageUrl?: true
     popularity?: true
     voteCount?: true
     score?: true
@@ -2560,7 +2560,7 @@ export namespace Prisma {
     title: string
     userId: number
     originalTitle: string
-    coverImage: string
+    coverImageUrl: string
     popularity: number
     voteCount: number
     score: number
@@ -2603,7 +2603,7 @@ export namespace Prisma {
     title?: boolean
     userId?: boolean
     originalTitle?: boolean
-    coverImage?: boolean
+    coverImageUrl?: boolean
     popularity?: boolean
     voteCount?: boolean
     score?: boolean
@@ -2630,7 +2630,7 @@ export namespace Prisma {
     title?: boolean
     userId?: boolean
     originalTitle?: boolean
-    coverImage?: boolean
+    coverImageUrl?: boolean
     popularity?: boolean
     voteCount?: boolean
     score?: boolean
@@ -2655,7 +2655,7 @@ export namespace Prisma {
     title?: boolean
     userId?: boolean
     originalTitle?: boolean
-    coverImage?: boolean
+    coverImageUrl?: boolean
     popularity?: boolean
     voteCount?: boolean
     score?: boolean
@@ -2680,7 +2680,7 @@ export namespace Prisma {
     title?: boolean
     userId?: boolean
     originalTitle?: boolean
-    coverImage?: boolean
+    coverImageUrl?: boolean
     popularity?: boolean
     voteCount?: boolean
     score?: boolean
@@ -2699,7 +2699,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type MovieOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "userId" | "originalTitle" | "coverImage" | "popularity" | "voteCount" | "score" | "tagline" | "synopsis" | "genres" | "releaseDate" | "duration" | "status" | "language" | "budget" | "revenue" | "profit" | "trailerUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["movie"]>
+  export type MovieOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "userId" | "originalTitle" | "coverImageUrl" | "popularity" | "voteCount" | "score" | "tagline" | "synopsis" | "genres" | "releaseDate" | "duration" | "status" | "language" | "budget" | "revenue" | "profit" | "trailerUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["movie"]>
   export type MovieInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     emailSchedules?: boolean | Movie$emailSchedulesArgs<ExtArgs>
@@ -2723,7 +2723,7 @@ export namespace Prisma {
       title: string
       userId: number
       originalTitle: string
-      coverImage: string
+      coverImageUrl: string
       popularity: number
       voteCount: number
       score: number
@@ -3169,7 +3169,7 @@ export namespace Prisma {
     readonly title: FieldRef<"Movie", 'String'>
     readonly userId: FieldRef<"Movie", 'Int'>
     readonly originalTitle: FieldRef<"Movie", 'String'>
-    readonly coverImage: FieldRef<"Movie", 'String'>
+    readonly coverImageUrl: FieldRef<"Movie", 'String'>
     readonly popularity: FieldRef<"Movie", 'Float'>
     readonly voteCount: FieldRef<"Movie", 'Int'>
     readonly score: FieldRef<"Movie", 'Float'>
@@ -4789,7 +4789,7 @@ export namespace Prisma {
     title: 'title',
     userId: 'userId',
     originalTitle: 'originalTitle',
-    coverImage: 'coverImage',
+    coverImageUrl: 'coverImageUrl',
     popularity: 'popularity',
     voteCount: 'voteCount',
     score: 'score',
@@ -4984,7 +4984,7 @@ export namespace Prisma {
     title?: StringFilter<"Movie"> | string
     userId?: IntFilter<"Movie"> | number
     originalTitle?: StringFilter<"Movie"> | string
-    coverImage?: StringFilter<"Movie"> | string
+    coverImageUrl?: StringFilter<"Movie"> | string
     popularity?: FloatFilter<"Movie"> | number
     voteCount?: IntFilter<"Movie"> | number
     score?: FloatFilter<"Movie"> | number
@@ -5010,7 +5010,7 @@ export namespace Prisma {
     title?: SortOrder
     userId?: SortOrder
     originalTitle?: SortOrder
-    coverImage?: SortOrder
+    coverImageUrl?: SortOrder
     popularity?: SortOrder
     voteCount?: SortOrder
     score?: SortOrder
@@ -5039,7 +5039,7 @@ export namespace Prisma {
     NOT?: MovieWhereInput | MovieWhereInput[]
     userId?: IntFilter<"Movie"> | number
     originalTitle?: StringFilter<"Movie"> | string
-    coverImage?: StringFilter<"Movie"> | string
+    coverImageUrl?: StringFilter<"Movie"> | string
     popularity?: FloatFilter<"Movie"> | number
     voteCount?: IntFilter<"Movie"> | number
     score?: FloatFilter<"Movie"> | number
@@ -5065,7 +5065,7 @@ export namespace Prisma {
     title?: SortOrder
     userId?: SortOrder
     originalTitle?: SortOrder
-    coverImage?: SortOrder
+    coverImageUrl?: SortOrder
     popularity?: SortOrder
     voteCount?: SortOrder
     score?: SortOrder
@@ -5097,7 +5097,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Movie"> | string
     userId?: IntWithAggregatesFilter<"Movie"> | number
     originalTitle?: StringWithAggregatesFilter<"Movie"> | string
-    coverImage?: StringWithAggregatesFilter<"Movie"> | string
+    coverImageUrl?: StringWithAggregatesFilter<"Movie"> | string
     popularity?: FloatWithAggregatesFilter<"Movie"> | number
     voteCount?: IntWithAggregatesFilter<"Movie"> | number
     score?: FloatWithAggregatesFilter<"Movie"> | number
@@ -5257,7 +5257,7 @@ export namespace Prisma {
   export type MovieCreateInput = {
     title: string
     originalTitle: string
-    coverImage: string
+    coverImageUrl: string
     popularity: number
     voteCount: number
     score: number
@@ -5283,7 +5283,7 @@ export namespace Prisma {
     title: string
     userId: number
     originalTitle: string
-    coverImage: string
+    coverImageUrl: string
     popularity: number
     voteCount: number
     score: number
@@ -5306,7 +5306,7 @@ export namespace Prisma {
   export type MovieUpdateInput = {
     title?: StringFieldUpdateOperationsInput | string
     originalTitle?: StringFieldUpdateOperationsInput | string
-    coverImage?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: StringFieldUpdateOperationsInput | string
     popularity?: FloatFieldUpdateOperationsInput | number
     voteCount?: IntFieldUpdateOperationsInput | number
     score?: FloatFieldUpdateOperationsInput | number
@@ -5332,7 +5332,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     userId?: IntFieldUpdateOperationsInput | number
     originalTitle?: StringFieldUpdateOperationsInput | string
-    coverImage?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: StringFieldUpdateOperationsInput | string
     popularity?: FloatFieldUpdateOperationsInput | number
     voteCount?: IntFieldUpdateOperationsInput | number
     score?: FloatFieldUpdateOperationsInput | number
@@ -5357,7 +5357,7 @@ export namespace Prisma {
     title: string
     userId: number
     originalTitle: string
-    coverImage: string
+    coverImageUrl: string
     popularity: number
     voteCount: number
     score: number
@@ -5379,7 +5379,7 @@ export namespace Prisma {
   export type MovieUpdateManyMutationInput = {
     title?: StringFieldUpdateOperationsInput | string
     originalTitle?: StringFieldUpdateOperationsInput | string
-    coverImage?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: StringFieldUpdateOperationsInput | string
     popularity?: FloatFieldUpdateOperationsInput | number
     voteCount?: IntFieldUpdateOperationsInput | number
     score?: FloatFieldUpdateOperationsInput | number
@@ -5403,7 +5403,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     userId?: IntFieldUpdateOperationsInput | number
     originalTitle?: StringFieldUpdateOperationsInput | string
-    coverImage?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: StringFieldUpdateOperationsInput | string
     popularity?: FloatFieldUpdateOperationsInput | number
     voteCount?: IntFieldUpdateOperationsInput | number
     score?: FloatFieldUpdateOperationsInput | number
@@ -5656,7 +5656,7 @@ export namespace Prisma {
     title?: SortOrder
     userId?: SortOrder
     originalTitle?: SortOrder
-    coverImage?: SortOrder
+    coverImageUrl?: SortOrder
     popularity?: SortOrder
     voteCount?: SortOrder
     score?: SortOrder
@@ -5692,7 +5692,7 @@ export namespace Prisma {
     title?: SortOrder
     userId?: SortOrder
     originalTitle?: SortOrder
-    coverImage?: SortOrder
+    coverImageUrl?: SortOrder
     popularity?: SortOrder
     voteCount?: SortOrder
     score?: SortOrder
@@ -5715,7 +5715,7 @@ export namespace Prisma {
     title?: SortOrder
     userId?: SortOrder
     originalTitle?: SortOrder
-    coverImage?: SortOrder
+    coverImageUrl?: SortOrder
     popularity?: SortOrder
     voteCount?: SortOrder
     score?: SortOrder
@@ -6152,7 +6152,7 @@ export namespace Prisma {
   export type MovieCreateWithoutUserInput = {
     title: string
     originalTitle: string
-    coverImage: string
+    coverImageUrl: string
     popularity: number
     voteCount: number
     score: number
@@ -6176,7 +6176,7 @@ export namespace Prisma {
     id?: number
     title: string
     originalTitle: string
-    coverImage: string
+    coverImageUrl: string
     popularity: number
     voteCount: number
     score: number
@@ -6257,7 +6257,7 @@ export namespace Prisma {
     title?: StringFilter<"Movie"> | string
     userId?: IntFilter<"Movie"> | number
     originalTitle?: StringFilter<"Movie"> | string
-    coverImage?: StringFilter<"Movie"> | string
+    coverImageUrl?: StringFilter<"Movie"> | string
     popularity?: FloatFilter<"Movie"> | number
     voteCount?: IntFilter<"Movie"> | number
     score?: FloatFilter<"Movie"> | number
@@ -6405,7 +6405,7 @@ export namespace Prisma {
   export type MovieCreateWithoutEmailSchedulesInput = {
     title: string
     originalTitle: string
-    coverImage: string
+    coverImageUrl: string
     popularity: number
     voteCount: number
     score: number
@@ -6430,7 +6430,7 @@ export namespace Prisma {
     title: string
     userId: number
     originalTitle: string
-    coverImage: string
+    coverImageUrl: string
     popularity: number
     voteCount: number
     score: number
@@ -6492,7 +6492,7 @@ export namespace Prisma {
   export type MovieUpdateWithoutEmailSchedulesInput = {
     title?: StringFieldUpdateOperationsInput | string
     originalTitle?: StringFieldUpdateOperationsInput | string
-    coverImage?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: StringFieldUpdateOperationsInput | string
     popularity?: FloatFieldUpdateOperationsInput | number
     voteCount?: IntFieldUpdateOperationsInput | number
     score?: FloatFieldUpdateOperationsInput | number
@@ -6517,7 +6517,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     userId?: IntFieldUpdateOperationsInput | number
     originalTitle?: StringFieldUpdateOperationsInput | string
-    coverImage?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: StringFieldUpdateOperationsInput | string
     popularity?: FloatFieldUpdateOperationsInput | number
     voteCount?: IntFieldUpdateOperationsInput | number
     score?: FloatFieldUpdateOperationsInput | number
@@ -6570,7 +6570,7 @@ export namespace Prisma {
     id?: number
     title: string
     originalTitle: string
-    coverImage: string
+    coverImageUrl: string
     popularity: number
     voteCount: number
     score: number
@@ -6601,7 +6601,7 @@ export namespace Prisma {
   export type MovieUpdateWithoutUserInput = {
     title?: StringFieldUpdateOperationsInput | string
     originalTitle?: StringFieldUpdateOperationsInput | string
-    coverImage?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: StringFieldUpdateOperationsInput | string
     popularity?: FloatFieldUpdateOperationsInput | number
     voteCount?: IntFieldUpdateOperationsInput | number
     score?: FloatFieldUpdateOperationsInput | number
@@ -6625,7 +6625,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     originalTitle?: StringFieldUpdateOperationsInput | string
-    coverImage?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: StringFieldUpdateOperationsInput | string
     popularity?: FloatFieldUpdateOperationsInput | number
     voteCount?: IntFieldUpdateOperationsInput | number
     score?: FloatFieldUpdateOperationsInput | number
@@ -6649,7 +6649,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     originalTitle?: StringFieldUpdateOperationsInput | string
-    coverImage?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: StringFieldUpdateOperationsInput | string
     popularity?: FloatFieldUpdateOperationsInput | number
     voteCount?: IntFieldUpdateOperationsInput | number
     score?: FloatFieldUpdateOperationsInput | number

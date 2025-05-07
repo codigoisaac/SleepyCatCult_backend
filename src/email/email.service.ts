@@ -148,7 +148,7 @@ export class EmailService {
           <h3>Olá ${user.name},</h3>
           <p>O filme <strong>${movie.title}</strong> que você estava aguardando estreia hoje!</p>
           <div style="margin: 20px 0;">
-            <img src="${movie.coverImage}" alt="${movie.title}" style="max-width: 100%; border-radius: 8px;" />
+            <img src="${movie.coverImageUrl}" alt="${movie.title}" style="max-width: 100%; border-radius: 8px;" />
           </div>
           <p><strong>Sinopse:</strong> ${movie.synopsis}</p>
           <p><strong>Duração:</strong> ${movie.duration} minutos</p>
