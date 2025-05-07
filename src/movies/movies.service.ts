@@ -227,6 +227,10 @@ export class MoviesService {
       this.logger.log(`✅ Data updated successfully for movie ID: ${id}`);
       return updatedMovie;
     } catch (error) {
+      this.logger.error(
+        `❌ Error during movie data update for movie ID ${id}:`,
+        error,
+      );
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
           throw new NotFoundException(`Movie with ID ${id} not found`);
@@ -442,7 +446,7 @@ export class MoviesService {
     scoreMin,
     scoreMax,
     paginationPage = 1,
-    paginationPerPage = 10,
+    paginationPerPage = 12,
   }: {
     durationMin?: number;
     durationMax?: number;
